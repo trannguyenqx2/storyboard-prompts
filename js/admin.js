@@ -8,6 +8,10 @@ const sbAdmin = supabase.createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 // ── Auth ──────────────────────────────────────────────────
 const ADMIN_PASSWORD = 'Tomato1401@!#';
 
+const PAGE_ADMIN = 100;
+let currentPage = 0;
+let totalCount  = 0;
+
 document.addEventListener('DOMContentLoaded', () => {
   checkAuth();
 });
@@ -16,7 +20,7 @@ function checkAuth() {
   const authed = sessionStorage.getItem('admin_authed');
   if (authed === '1') {
     showPanel();
-    loadPromptList();
+    loadPromptList(0);
   } else {
     document.getElementById('auth-screen').style.display = 'flex';
   }
@@ -28,7 +32,7 @@ document.getElementById('btn-login')?.addEventListener('click', () => {
     sessionStorage.setItem('admin_authed', '1');
     document.getElementById('auth-screen').style.display = 'none';
     showPanel();
-    loadPromptList();
+    loadPromptList(0);
   } else {
     document.getElementById('auth-error').textContent = 'Wrong password.';
   }
@@ -70,13 +74,10 @@ function setupForm() {
         const { data: upData, error: upErr } = await sbAdmin.storage
           .from('storyboard-images')
           .upload(filename, file, { upsert: false });
-
         if (upErr) throw upErr;
-
         const { data: urlData } = sbAdmin.storage
           .from('storyboard-images')
           .getPublicUrl(upData.path);
-
         image_url = urlData.publicUrl;
       }
 
@@ -105,7 +106,7 @@ function setupForm() {
 
       form.reset();
       preview.style.display = 'none';
-      loadPromptList();
+      loadPromptList(currentPage);
 
     } catch (err) {
       alert('Error: ' + (err.message || JSON.stringify(err)));
@@ -122,14 +123,15 @@ let selectedIds = new Set();
 function setupBulkBar() {
   document.getElementById('btn-bulk-delete')?.addEventListener('click', async () => {
     if (!selectedIds.size) return;
-    if (!confirm(`Delete ${selectedIds.size} prompt(s)?`)) return;
+    const count = selectedIds.size;
+    if (!confirm(`Delete ${count} prompt(s)?`)) return;
     for (const id of selectedIds) {
       await sbAdmin.from('prompts').delete().eq('id', id);
     }
     selectedIds.clear();
     updateBulkBar();
-    showToast(`Deleted ${selectedIds.size || 'selected'} prompts.`, 'deleted');
-    loadPromptList();
+    showToast(`Deleted ${count} prompts.`, 'deleted');
+    loadPromptList(currentPage);
   });
 
   document.getElementById('btn-bulk-cancel')?.addEventListener('click', () => {
@@ -141,7 +143,7 @@ function setupBulkBar() {
 }
 
 function updateBulkBar() {
-  const bar = document.getElementById('bulk-bar');
+  const bar   = document.getElementById('bulk-bar');
   const count = document.getElementById('bulk-count');
   if (selectedIds.size > 0) {
     bar.style.display = 'flex';
@@ -152,99 +154,142 @@ function updateBulkBar() {
 }
 
 // ── Prompt list ───────────────────────────────────────────
-async function loadPromptList() {
+async function loadPromptList(page = 0) {
+  currentPage = page;
   const tbody = document.getElementById('list-body');
-  tbody.innerHTML = '<tr class="empty-row"><td colspan="8">Loading...</td></tr>';
+  tbody.innerHTML = `<tr class="empty-row"><td colspan="8">Loading...</td></tr>`;
   selectedIds.clear();
   updateBulkBar();
 
-  const { data, error } = await sbAdmin.from('prompts')
-    .select('id, title, description, category, author, image_url, created_at')
+  const from = page * PAGE_ADMIN;
+  const to   = from + PAGE_ADMIN - 1;
+
+  const { data, error, count } = await sbAdmin.from('prompts')
+    .select('id, title, description, category, author, image_url, created_at', { count: 'exact' })
     .order('created_at', { ascending: false })
-    .limit(200);
+    .range(from, to);
 
   if (error || !data) {
-    tbody.innerHTML = '<tr class="empty-row"><td colspan="8">Error loading.</td></tr>';
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="8">Error loading.</td></tr>`;
     return;
   }
+
+  totalCount = count ?? totalCount;
+  const totalPages = Math.ceil(totalCount / PAGE_ADMIN);
+
+  // Update header info
+  document.getElementById('list-info').textContent =
+    `Trang ${page + 1}/${totalPages} — ${totalCount} prompts`;
 
   if (!data.length) {
-    tbody.innerHTML = '<tr class="empty-row"><td colspan="8">No prompts yet. Add one!</td></tr>';
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="8">No prompts on this page.</td></tr>`;
+    renderPagination(page, totalPages);
     return;
   }
 
-  // Check-all header
+  // Check-all
   document.getElementById('check-all').onchange = (e) => {
     document.querySelectorAll('.row-check').forEach(cb => {
       cb.checked = e.target.checked;
-      const id = cb.dataset.id;
-      if (e.target.checked) selectedIds.add(id);
-      else selectedIds.delete(id);
+      if (e.target.checked) selectedIds.add(cb.dataset.id);
+      else selectedIds.delete(cb.dataset.id);
     });
     updateBulkBar();
   };
 
   tbody.innerHTML = '';
   data.forEach((p, i) => {
+    const stt      = from + i + 1;
     const catLabel = CATEGORIES.find(c => c.id === p.category)?.label || p.category;
-    const thumb = p.image_url
+    const thumb    = p.image_url
       ? `<img src="${escHtml(p.image_url)}" class="thumb" alt="" loading="lazy">`
-      : `<div class="thumb-empty">—</div>`;
+      : `<div class="thumb-empty">🖼</div>`;
 
     const tr = document.createElement('tr');
     tr.dataset.id = p.id;
     tr.innerHTML = `
-      <td><input type="checkbox" class="row-check" data-id="${p.id}"></td>
-      <td class="td-stt">${i + 1}</td>
-      <td>${thumb}</td>
+      <td class="td-check"><input type="checkbox" class="row-check" data-id="${p.id}"></td>
+      <td class="td-stt">${stt}</td>
+      <td class="td-thumb">${thumb}</td>
       <td class="td-title">
         <span class="view-mode">${escHtml(p.title)}</span>
         <div class="edit-mode" style="display:none">
           <input class="qe-title" value="${escHtml(p.title)}" placeholder="Title">
-          <input class="qe-desc" value="${escHtml(p.description || '')}" placeholder="Description" style="margin-top:4px;font-size:11px;color:#6b7280">
+          <input class="qe-desc"  value="${escHtml(p.description || '')}" placeholder="Description">
         </div>
       </td>
       <td>
         <span class="cat-pill view-mode">${escHtml(catLabel)}</span>
         <select class="qe-cat edit-mode" style="display:none">
-          ${CATEGORIES.filter(c=>c.id!=='all').map(c=>`<option value="${c.id}" ${c.id===p.category?'selected':''}>${c.label}</option>`).join('')}
+          ${CATEGORIES.filter(c => c.id !== 'all').map(c =>
+            `<option value="${c.id}" ${c.id === p.category ? 'selected' : ''}>${c.label}</option>`
+          ).join('')}
         </select>
       </td>
       <td class="view-mode">${escHtml(p.author)}</td>
       <td style="white-space:nowrap">${fmtDate(p.created_at)}</td>
       <td style="white-space:nowrap">
-        <button class="tbl-btn qedit-btn" data-id="${p.id}" title="Quick Edit">✏️</button>
-        <button class="tbl-btn save-qe-btn" data-id="${p.id}" style="display:none" title="Save">💾</button>
+        <button class="tbl-btn qedit-btn"    data-id="${p.id}" title="Quick Edit">✏️</button>
+        <button class="tbl-btn save-qe-btn"  data-id="${p.id}" style="display:none" title="Save">💾</button>
         <button class="tbl-btn cancel-qe-btn" data-id="${p.id}" style="display:none" title="Cancel">✕</button>
-        <button class="tbl-btn edit-btn" data-id="${p.id}">Edit Full</button>
-        <button class="tbl-btn del-btn" data-id="${p.id}">Delete</button>
+        <button class="tbl-btn edit-btn"     data-id="${p.id}">Edit Full</button>
+        <button class="tbl-btn del-btn"      data-id="${p.id}">Delete</button>
       </td>`;
     tbody.appendChild(tr);
 
-    // Checkbox
     tr.querySelector('.row-check').addEventListener('change', (e) => {
       if (e.target.checked) selectedIds.add(p.id);
       else selectedIds.delete(p.id);
       updateBulkBar();
     });
 
-    // Quick Edit toggle
-    tr.querySelector('.qedit-btn').addEventListener('click', () => toggleQE(tr, true));
-    tr.querySelector('.cancel-qe-btn').addEventListener('click', () => toggleQE(tr, false));
-    tr.querySelector('.save-qe-btn').addEventListener('click', () => saveQE(tr, p.id));
-
-    // Full edit / delete
-    tr.querySelector('.del-btn').addEventListener('click', () => deletePrompt(p.id));
+    tr.querySelector('.qedit-btn').addEventListener('click',    () => toggleQE(tr, true));
+    tr.querySelector('.cancel-qe-btn').addEventListener('click',() => toggleQE(tr, false));
+    tr.querySelector('.save-qe-btn').addEventListener('click',  () => saveQE(tr, p.id));
+    tr.querySelector('.del-btn').addEventListener('click',  () => deletePrompt(p.id));
     tr.querySelector('.edit-btn').addEventListener('click', () => editPrompt(p.id));
   });
+
+  renderPagination(page, totalPages);
 }
 
+// ── Pagination ────────────────────────────────────────────
+function renderPagination(current, total) {
+  const wrap = document.getElementById('pagination');
+  wrap.innerHTML = '';
+  if (total <= 1) return;
+
+  const btn = (label, page, disabled = false, active = false) => {
+    const b = document.createElement('button');
+    b.textContent = label;
+    b.className = 'pg-btn' + (active ? ' pg-active' : '') + (disabled ? ' pg-disabled' : '');
+    b.disabled = disabled;
+    if (!disabled) b.addEventListener('click', () => loadPromptList(page));
+    return b;
+  };
+
+  wrap.appendChild(btn('«', 0, current === 0));
+  wrap.appendChild(btn('‹', current - 1, current === 0));
+
+  // Show max 7 page buttons
+  const start = Math.max(0, current - 3);
+  const end   = Math.min(total - 1, start + 6);
+  for (let i = start; i <= end; i++) {
+    wrap.appendChild(btn(i + 1, i, false, i === current));
+  }
+
+  wrap.appendChild(btn('›', current + 1, current === total - 1));
+  wrap.appendChild(btn('»', total - 1, current === total - 1));
+}
+
+// ── Quick Edit ────────────────────────────────────────────
 function toggleQE(tr, on) {
   tr.querySelectorAll('.view-mode').forEach(el => el.style.display = on ? 'none' : '');
   tr.querySelectorAll('.edit-mode').forEach(el => el.style.display = on ? '' : 'none');
-  tr.querySelector('.qedit-btn').style.display  = on ? 'none' : '';
+  tr.querySelector('.qedit-btn').style.display     = on ? 'none' : '';
   tr.querySelector('.save-qe-btn').style.display   = on ? '' : 'none';
   tr.querySelector('.cancel-qe-btn').style.display = on ? '' : 'none';
+  tr.classList.toggle('qe-active', on);
   if (on) tr.querySelector('.qe-title').focus();
 }
 
@@ -253,35 +298,34 @@ async function saveQE(tr, id) {
   const desc  = tr.querySelector('.qe-desc').value.trim();
   const cat   = tr.querySelector('.qe-cat').value;
   if (!title) { alert('Title cannot be empty'); return; }
-
   const { error } = await sbAdmin.from('prompts').update({
     title, description: desc || null, category: cat
   }).eq('id', id);
-
   if (error) { alert('Error: ' + error.message); return; }
   showToast('Updated!', 'success');
-  loadPromptList();
+  loadPromptList(currentPage);
 }
 
+// ── Delete / Edit full ────────────────────────────────────
 async function deletePrompt(id) {
   if (!confirm('Delete this prompt?')) return;
   await sbAdmin.from('prompts').delete().eq('id', id);
   showToast('Deleted.', 'deleted');
-  loadPromptList();
+  loadPromptList(currentPage);
 }
 
 async function editPrompt(id) {
   const { data } = await sbAdmin.from('prompts').select('*').eq('id', id).single();
   if (!data) return;
 
-  document.getElementById('form-title').textContent = 'Edit Prompt';
-  document.getElementById('f-title').value       = data.title;
-  document.getElementById('f-description').value = data.description || '';
-  document.getElementById('f-prompt').value      = data.prompt;
-  document.getElementById('f-category').value    = data.category;
-  document.getElementById('f-author').value      = data.author || '';
-  document.getElementById('f-tags').value        = (data.tags || []).join(', ');
-  document.getElementById('f-image-url').value   = data.image_url || '';
+  document.getElementById('form-title').textContent     = 'Edit Prompt';
+  document.getElementById('f-title').value              = data.title;
+  document.getElementById('f-description').value        = data.description || '';
+  document.getElementById('f-prompt').value             = data.prompt;
+  document.getElementById('f-category').value           = data.category;
+  document.getElementById('f-author').value             = data.author || '';
+  document.getElementById('f-tags').value               = (data.tags || []).join(', ');
+  document.getElementById('f-image-url').value          = data.image_url || '';
 
   if (data.image_url) {
     const preview = document.getElementById('img-preview');
@@ -290,7 +334,7 @@ async function editPrompt(id) {
   }
 
   document.getElementById('prompt-form').dataset.editId = id;
-  document.getElementById('btn-submit').textContent = 'Update Prompt';
+  document.getElementById('btn-submit').textContent     = 'Update Prompt';
   document.getElementById('prompt-form').scrollIntoView({ behavior: 'smooth' });
 }
 
