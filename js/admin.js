@@ -1,15 +1,12 @@
 // admin.js — admin panel logic
 
 // ── Service Role Key (chỉ dùng trong admin, KHÔNG public) ──
-// Điền vào đây — KHÔNG commit lên GitHub public repo
-// Nếu repo public, dùng Supabase Edge Function thay thế
 const SUPABASE_SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx5ZWZ1dnl6YmF5dnB4a2JhcnZoIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDMzOTkyNywiZXhwIjoyMDk1OTE1OTI3fQ.qkTArgy0_AZ3ohS5Ixw3EVrrWE014piMeJtlyftAWtE';
 
-const { createClient } = supabase;
-const sbAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+const sbAdmin = supabase.createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
 // ── Auth (simple password gate) ───────────────────────────
-const ADMIN_PASSWORD = 'Tomato1401@!#'; // đổi thành password của bạn
+const ADMIN_PASSWORD = 'Tomato1401@!#';
 
 document.addEventListener('DOMContentLoaded', () => {
   checkAuth();
@@ -65,7 +62,6 @@ function setupForm() {
       const editId = form.dataset.editId || null;
       let image_url = document.getElementById('f-image-url').value.trim() || null;
 
-      // Upload image if file selected
       const file = imgInput.files[0];
       if (file) {
         const ext = file.name.split('.').pop();
