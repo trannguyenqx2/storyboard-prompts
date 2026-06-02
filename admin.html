@@ -26,29 +26,16 @@
       align-items: center; justify-content: center;
     }
     .auth-box {
-      background: #fff;
-      border-radius: 20px;
-      padding: 48px 40px;
-      width: 360px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-      text-align: center;
+      background: #fff; border-radius: 20px;
+      padding: 48px 40px; width: 360px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2); text-align: center;
     }
-    .auth-logo {
-      font-size: 13px; font-weight: 700;
-      letter-spacing: 0.2em; text-transform: uppercase;
-      color: #667eea; margin-bottom: 8px;
-    }
-    .auth-box h2 {
-      font-size: 1.6rem; font-weight: 700;
-      color: #1a1a2e; margin-bottom: 28px;
-    }
+    .auth-logo { font-size: 13px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: #667eea; margin-bottom: 8px; }
+    .auth-box h2 { font-size: 1.6rem; font-weight: 700; color: #1a1a2e; margin-bottom: 28px; }
     .auth-box input {
-      width: 100%; padding: 12px 16px;
-      border: 2px solid #e8eaf0;
-      border-radius: 10px;
-      font-family: inherit; font-size: 14px;
-      color: #1a1a2e; margin-bottom: 10px;
-      outline: none; transition: border-color 0.2s;
+      width: 100%; padding: 12px 16px; border: 2px solid #e8eaf0;
+      border-radius: 10px; font-family: inherit; font-size: 14px;
+      color: #1a1a2e; margin-bottom: 10px; outline: none; transition: border-color 0.2s;
     }
     .auth-box input:focus { border-color: #667eea; }
     #auth-error { font-size: 12px; color: #ef4444; min-height: 16px; margin-bottom: 12px; }
@@ -64,34 +51,28 @@
 
     /* ── Header ── */
     .site-header {
-      background: #fff;
-      border-bottom: 1px solid #e8eaf0;
+      background: #fff; border-bottom: 1px solid #e8eaf0;
       position: sticky; top: 0; z-index: 100;
       box-shadow: 0 1px 8px rgba(0,0,0,0.06);
     }
     .header-inner {
-      max-width: 1400px; margin: 0 auto;
-      padding: 0 28px;
-      display: flex; align-items: center; gap: 16px;
-      height: 60px;
+      max-width: 1400px; margin: 0 auto; padding: 0 28px;
+      display: flex; align-items: center; gap: 16px; height: 60px;
     }
     .logo {
-      font-size: 1.1rem; font-weight: 800;
-      letter-spacing: 0.06em;
+      font-size: 1.1rem; font-weight: 800; letter-spacing: 0.06em;
       background: linear-gradient(135deg, #667eea, #764ba2);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
     .header-badge {
       background: linear-gradient(135deg, #667eea22, #764ba222);
       color: #667eea; font-size: 11px; font-weight: 700;
-      padding: 3px 10px; border-radius: 999px;
-      letter-spacing: 0.08em;
+      padding: 3px 10px; border-radius: 999px; letter-spacing: 0.08em;
     }
     .header-nav { margin-left: auto; display: flex; gap: 8px; }
     .header-nav a {
       font-size: 13px; font-weight: 500; color: #6b7280;
-      padding: 6px 14px; border-radius: 8px;
-      transition: background 0.15s, color 0.15s;
+      padding: 6px 14px; border-radius: 8px; transition: background 0.15s, color 0.15s;
     }
     .header-nav a:hover { background: #f3f4f6; color: #1a1a2e; }
 
@@ -99,181 +80,194 @@
     .container { max-width: 1400px; margin: 0 auto; padding: 0 28px; }
     #admin-panel { display: none; padding: 32px 0 80px; }
 
-    .page-header {
-      display: flex; align-items: center; gap: 16px;
-      margin-bottom: 28px;
-    }
-    .page-title {
-      font-size: 1.5rem; font-weight: 800; color: #1a1a2e;
-    }
+    .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 28px; }
+    .page-title { font-size: 1.5rem; font-weight: 800; color: #1a1a2e; }
     .page-subtitle { font-size: 13px; color: #9ca3af; margin-top: 2px; }
 
     .admin-grid {
-      display: grid;
-      grid-template-columns: 440px 1fr;
-      gap: 24px;
-      align-items: start;
+      display: grid; grid-template-columns: 440px 1fr;
+      gap: 24px; align-items: start;
     }
     @media (max-width: 960px) { .admin-grid { grid-template-columns: 1fr; } }
 
     /* ── Cards ── */
     .form-card, .list-card {
-      background: #fff;
-      border-radius: 16px;
+      background: #fff; border-radius: 16px;
       border: 1px solid #e8eaf0;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
-      overflow: hidden;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04); overflow: hidden;
     }
     .card-header {
-      padding: 20px 24px 16px;
-      border-bottom: 1px solid #f3f4f6;
+      padding: 20px 24px 16px; border-bottom: 1px solid #f3f4f6;
       display: flex; align-items: center; gap: 10px;
     }
     .card-icon {
       width: 34px; height: 34px;
       background: linear-gradient(135deg, #667eea22, #764ba222);
-      border-radius: 8px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 16px;
+      border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px;
     }
-    .card-title {
-      font-size: 15px; font-weight: 700; color: #1a1a2e;
-    }
+    .card-title { font-size: 15px; font-weight: 700; color: #1a1a2e; }
     .card-body { padding: 20px 24px 24px; }
 
     /* ── Form ── */
     .form-group { margin-bottom: 16px; }
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    label {
-      display: block;
-      font-size: 12px; font-weight: 600;
-      color: #374151; margin-bottom: 6px;
-      letter-spacing: 0.03em;
-    }
+    label { display: block; font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 6px; letter-spacing: 0.03em; }
     label .req { color: #ef4444; margin-left: 2px; }
     input[type=text], input[type=url], textarea, select {
-      width: 100%;
-      padding: 10px 14px;
-      background: #f9fafb;
-      border: 1.5px solid #e5e7eb;
-      border-radius: 10px;
-      font-family: inherit; font-size: 14px;
+      width: 100%; padding: 10px 14px;
+      background: #f9fafb; border: 1.5px solid #e5e7eb;
+      border-radius: 10px; font-family: inherit; font-size: 14px;
       color: #1a1a2e; outline: none;
       transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
     }
-    input[type=text]:focus, input[type=url]:focus,
-    textarea:focus, select:focus {
-      border-color: #667eea;
-      background: #fff;
+    input[type=text]:focus, input[type=url]:focus, textarea:focus, select:focus {
+      border-color: #667eea; background: #fff;
       box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
     }
     textarea { resize: vertical; min-height: 110px; line-height: 1.6; }
     select { appearance: none; cursor: pointer; }
 
-    /* File upload */
     .file-upload-wrap {
-      position: relative;
-      border: 2px dashed #e5e7eb;
-      border-radius: 10px;
-      padding: 20px;
-      text-align: center;
-      cursor: pointer;
-      transition: border-color 0.2s, background 0.2s;
-      background: #f9fafb;
+      position: relative; border: 2px dashed #e5e7eb;
+      border-radius: 10px; padding: 20px; text-align: center;
+      cursor: pointer; transition: border-color 0.2s, background 0.2s; background: #f9fafb;
     }
     .file-upload-wrap:hover { border-color: #667eea; background: #f5f3ff; }
     .file-upload-wrap input[type=file] {
       position: absolute; inset: 0; opacity: 0; cursor: pointer;
-      width: 100%; height: 100%;
-      border: none; background: none; padding: 0;
+      width: 100%; height: 100%; border: none; background: none; padding: 0;
     }
     .file-upload-wrap input[type=file]:focus { box-shadow: none; }
     .upload-icon { font-size: 24px; margin-bottom: 6px; }
     .upload-text { font-size: 13px; color: #6b7280; }
     .upload-text strong { color: #667eea; }
-
-    #img-preview {
-      display: none; width: 100%; border-radius: 10px;
-      margin-top: 10px; border: 1px solid #e5e7eb;
-      max-height: 200px; object-fit: cover;
-    }
+    #img-preview { display: none; width: 100%; border-radius: 10px; margin-top: 10px; border: 1px solid #e5e7eb; max-height: 200px; object-fit: cover; }
 
     .divider {
       display: flex; align-items: center; gap: 10px;
-      margin: 4px 0 12px;
-      font-size: 11px; font-weight: 600; color: #9ca3af;
-      letter-spacing: 0.08em;
+      margin: 4px 0 12px; font-size: 11px; font-weight: 600;
+      color: #9ca3af; letter-spacing: 0.08em;
     }
-    .divider::before, .divider::after {
-      content: ''; flex: 1; height: 1px; background: #e5e7eb;
-    }
+    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: #e5e7eb; }
 
     #btn-submit {
       width: 100%; padding: 13px;
       background: linear-gradient(135deg, #667eea, #764ba2);
       color: #fff; font-weight: 700; font-size: 14px;
       border-radius: 10px; letter-spacing: 0.04em;
-      transition: opacity 0.2s, transform 0.1s;
-      margin-top: 4px;
+      transition: opacity 0.2s, transform 0.1s; margin-top: 4px;
     }
     #btn-submit:hover:not(:disabled) { opacity: 0.9; }
     #btn-submit:active:not(:disabled) { transform: scale(0.99); }
     #btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ── Bulk bar ── */
+    #bulk-bar {
+      display: none; align-items: center; gap: 12px;
+      background: #eff6ff; border: 1px solid #bfdbfe;
+      border-radius: 10px; padding: 10px 16px; margin: 0 0 12px;
+    }
+    #bulk-count { font-size: 13px; font-weight: 600; color: #1d4ed8; }
+    #btn-bulk-delete {
+      background: #fef2f2; border: 1px solid #fecaca;
+      color: #dc2626; font-size: 12px; font-weight: 700;
+      padding: 6px 14px; border-radius: 7px; transition: background 0.15s;
+    }
+    #btn-bulk-delete:hover { background: #fee2e2; }
+    #btn-bulk-cancel {
+      background: #f3f4f6; border: 1px solid #e5e7eb;
+      color: #6b7280; font-size: 12px; font-weight: 600;
+      padding: 6px 14px; border-radius: 7px; transition: background 0.15s;
+    }
+    #btn-bulk-cancel:hover { background: #e5e7eb; }
 
     /* ── Table ── */
     .table-wrap { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; }
     thead { background: #f9fafb; }
     th {
-      text-align: left; padding: 11px 16px;
-      font-size: 11px; font-weight: 700;
-      color: #6b7280; letter-spacing: 0.08em;
-      text-transform: uppercase;
-      border-bottom: 1px solid #f3f4f6;
-      white-space: nowrap;
+      text-align: left; padding: 11px 12px;
+      font-size: 11px; font-weight: 700; color: #6b7280;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      border-bottom: 1px solid #f3f4f6; white-space: nowrap;
     }
+    th.th-check, td.td-check { width: 36px; text-align: center; padding: 8px; }
+    th.th-stt, td.td-stt { width: 40px; text-align: center; font-size: 12px; color: #9ca3af; font-weight: 600; }
+    th.th-thumb, td.td-thumb { width: 64px; padding: 8px; }
+
     td {
-      padding: 12px 16px;
-      border-bottom: 1px solid #f9fafb;
-      font-size: 13px; color: #374151;
-      vertical-align: middle;
+      padding: 10px 12px; border-bottom: 1px solid #f9fafb;
+      font-size: 13px; color: #374151; vertical-align: middle;
     }
     tr:last-child td { border-bottom: none; }
     tr:hover td { background: #fafbff; }
-    .td-title { font-weight: 600; color: #1a1a2e; max-width: 200px; }
-    .td-title span { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    tr.qe-active td { background: #f5f3ff !important; }
+
+    .td-title { font-weight: 600; color: #1a1a2e; min-width: 180px; max-width: 240px; }
+    .td-title .view-mode { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* Thumbnail */
+    .thumb {
+      width: 52px; height: 40px; object-fit: cover;
+      border-radius: 6px; border: 1px solid #e5e7eb; display: block;
+    }
+    .thumb-empty {
+      width: 52px; height: 40px; background: #f3f4f6;
+      border-radius: 6px; border: 1px solid #e5e7eb;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; color: #d1d5db;
+    }
 
     .cat-pill {
-      display: inline-block;
-      font-size: 11px; font-weight: 600;
+      display: inline-block; font-size: 11px; font-weight: 600;
       padding: 3px 10px; border-radius: 999px;
       background: #ede9fe; color: #7c3aed;
     }
 
+    /* Quick edit inputs in table */
+    .qe-title, .qe-desc {
+      width: 100%; padding: 5px 8px;
+      background: #fff; border: 1.5px solid #667eea;
+      border-radius: 6px; font-family: inherit; font-size: 13px;
+      color: #1a1a2e; outline: none; display: block;
+    }
+    .qe-desc { font-size: 11px; color: #6b7280; border-color: #c7c4f5; margin-top: 4px; }
+    .qe-cat {
+      padding: 5px 8px; background: #fff;
+      border: 1.5px solid #667eea; border-radius: 6px;
+      font-family: inherit; font-size: 12px; outline: none; width: 100%;
+    }
+
+    /* Buttons */
     .tbl-btn {
       font-size: 11px; font-weight: 600;
-      padding: 5px 12px; border-radius: 6px;
-      margin-right: 4px; transition: all 0.15s;
+      padding: 5px 10px; border-radius: 6px;
+      margin-right: 3px; margin-bottom: 2px;
+      transition: all 0.15s; display: inline-block;
     }
-    .edit-btn {
-      background: #eff6ff; border: 1px solid #bfdbfe; color: #2563eb;
-    }
+    .qedit-btn { background: #f0fdf4; border: 1px solid #bbf7d0; color: #16a34a; font-size: 14px; padding: 4px 8px; }
+    .qedit-btn:hover { background: #dcfce7; }
+    .save-qe-btn { background: #eff6ff; border: 1px solid #bfdbfe; color: #2563eb; font-size: 14px; padding: 4px 8px; }
+    .save-qe-btn:hover { background: #dbeafe; }
+    .cancel-qe-btn { background: #f9fafb; border: 1px solid #e5e7eb; color: #6b7280; font-size: 13px; padding: 4px 8px; }
+    .cancel-qe-btn:hover { background: #f3f4f6; }
+    .edit-btn { background: #eff6ff; border: 1px solid #bfdbfe; color: #2563eb; }
     .edit-btn:hover { background: #dbeafe; }
-    .del-btn {
-      background: #fef2f2; border: 1px solid #fecaca; color: #dc2626;
-    }
+    .del-btn { background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; }
     .del-btn:hover { background: #fee2e2; }
 
-    .empty-row td {
-      text-align: center; padding: 40px;
-      color: #9ca3af; font-size: 13px;
+    .empty-row td { text-align: center; padding: 40px; color: #9ca3af; font-size: 13px; }
+
+    /* Checkbox style */
+    input[type=checkbox] {
+      width: 15px; height: 15px; accent-color: #667eea; cursor: pointer;
+      border: none; background: none; padding: 0;
     }
 
     /* ── Toast ── */
     #toast {
       position: fixed; bottom: 28px; right: 28px; z-index: 9999;
-      background: #1a1a2e; color: #fff;
-      font-weight: 600; font-size: 13px;
+      background: #1a1a2e; color: #fff; font-weight: 600; font-size: 13px;
       padding: 12px 20px; border-radius: 10px;
       box-shadow: 0 8px 24px rgba(0,0,0,0.15);
       transform: translateY(80px); opacity: 0;
@@ -286,11 +280,8 @@
 
     /* ── Footer ── */
     .site-footer {
-      border-top: 1px solid #e8eaf0;
-      padding: 20px 0;
-      text-align: center;
-      font-size: 12px; color: #9ca3af;
-      background: #fff;
+      border-top: 1px solid #e8eaf0; padding: 20px 0;
+      text-align: center; font-size: 12px; color: #9ca3af; background: #fff;
     }
     .site-footer a { color: #667eea; font-weight: 500; }
   </style>
@@ -338,22 +329,18 @@
         </div>
         <div class="card-body">
           <form id="prompt-form">
-
             <div class="form-group">
               <label>Title <span class="req">*</span></label>
               <input type="text" id="f-title" placeholder="e.g. Cinematic Samurai Storyboard" required>
             </div>
-
             <div class="form-group">
               <label>Description</label>
               <input type="text" id="f-description" placeholder="Brief description of this prompt…">
             </div>
-
             <div class="form-group">
               <label>Prompt Text <span class="req">*</span></label>
               <textarea id="f-prompt" placeholder="Full prompt text…" required></textarea>
             </div>
-
             <div class="form-row">
               <div class="form-group">
                 <label>Category <span class="req">*</span></label>
@@ -373,12 +360,10 @@
                 <input type="text" id="f-author" placeholder="LeeveoAI">
               </div>
             </div>
-
             <div class="form-group">
               <label>Tags <span style="color:#9ca3af;font-weight:400">(comma separated)</span></label>
               <input type="text" id="f-tags" placeholder="anime, storyboard, dark fantasy">
             </div>
-
             <div class="form-group">
               <label>Image</label>
               <div class="file-upload-wrap">
@@ -388,15 +373,11 @@
               </div>
               <img id="img-preview" src="" alt="Preview">
             </div>
-
             <div class="divider">OR PASTE URL</div>
-
             <div class="form-group">
               <input type="url" id="f-image-url" placeholder="https://…">
             </div>
-
             <button type="submit" id="btn-submit">Save Prompt</button>
-
           </form>
         </div>
       </div>
@@ -407,11 +388,24 @@
           <div class="card-icon">📋</div>
           <h2 class="card-title">All Prompts</h2>
         </div>
+
+        <!-- Bulk action bar -->
+        <div style="padding: 12px 16px 0">
+          <div id="bulk-bar">
+            <span id="bulk-count">0 selected</span>
+            <button id="btn-bulk-delete">🗑 Delete Selected</button>
+            <button id="btn-bulk-cancel">✕ Cancel</button>
+          </div>
+        </div>
+
         <div class="table-wrap">
           <table>
             <thead>
               <tr>
-                <th>Title</th>
+                <th class="th-check"><input type="checkbox" id="check-all" title="Select all"></th>
+                <th class="th-stt">#</th>
+                <th class="th-thumb">Img</th>
+                <th>Title / Description</th>
                 <th>Category</th>
                 <th>Author</th>
                 <th>Date</th>
@@ -419,7 +413,7 @@
               </tr>
             </thead>
             <tbody id="list-body">
-              <tr class="empty-row"><td colspan="5">Login to view…</td></tr>
+              <tr class="empty-row"><td colspan="8">Login to view…</td></tr>
             </tbody>
           </table>
         </div>
