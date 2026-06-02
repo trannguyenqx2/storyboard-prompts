@@ -12,6 +12,7 @@ let totalCount  = 0;
 
 document.addEventListener('DOMContentLoaded', () => {
   checkAuth();
+  setupLightbox();
 });
 
 function checkAuth() {
@@ -36,7 +37,6 @@ document.getElementById('btn-login')?.addEventListener('click', () => {
 
 async function showPanel() {
   document.getElementById('admin-panel').style.display = 'block';
-  // Load categories từ Supabase trước, rồi mới build UI
   await loadCategories();
   buildCategorySelect();
   setupForm();
@@ -45,7 +45,38 @@ async function showPanel() {
   loadPromptList(0);
 }
 
-// ── Build <select> từ CATEGORIES (load từ Supabase) ───────
+// ── Lightbox ──────────────────────────────────────────────
+function setupLightbox() {
+  const lb    = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lightbox-img');
+  const lbClose = document.getElementById('lightbox-close');
+
+  // Đóng khi click nền hoặc nút X
+  lb.addEventListener('click', (e) => {
+    if (e.target === lb || e.target === lbClose) closeLightbox();
+  });
+
+  // Đóng bằng phím Esc
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeLightbox();
+  });
+}
+
+function openLightbox(src) {
+  const lb    = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lightbox-img');
+  lbImg.src = src;
+  lb.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+  const lb = document.getElementById('lightbox');
+  lb.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// ── Build <select> từ CATEGORIES ─────────────────────────
 function buildCategorySelect() {
   const sel = document.getElementById('f-category');
   sel.innerHTML = '<option value="">— Select —</option>';
@@ -66,13 +97,11 @@ function setupCategoryManager() {
     const label = labelEl.value.trim();
     if (!label) return;
 
-    // Tạo id từ label: chữ thường, thay space/đặc biệt bằng '-'
     const id = label.toLowerCase()
-      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')  // bỏ dấu
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-|-$/g, '');
 
-    // Lấy order lớn nhất hiện tại
     const maxOrder = CATEGORIES.filter(c => c.id !== 'all')
       .reduce((m, c) => Math.max(m, c.order ?? 0), 0);
 
@@ -80,10 +109,7 @@ function setupCategoryManager() {
       id, label, order: maxOrder + 1
     });
 
-    if (error) {
-      alert('Error: ' + error.message);
-      return;
-    }
+    if (error) { alert('Error: ' + error.message); return; }
 
     labelEl.value = '';
     showToast(`Added "${label}"`, 'success');
@@ -270,7 +296,7 @@ async function loadPromptList(page = 0) {
     const stt      = from + i + 1;
     const catLabel = CATEGORIES.find(c => c.id === p.category)?.label || p.category;
     const thumb    = p.image_url
-      ? `<img src="${escHtml(p.image_url)}" class="thumb" alt="" loading="lazy">`
+      ? `<img src="${escHtml(p.image_url)}" class="thumb" alt="" loading="lazy" data-src="${escHtml(p.image_url)}">`
       : `<div class="thumb-empty">🖼</div>`;
 
     const catOptions = CATEGORIES.filter(c => c.id !== 'all').map(c =>
@@ -304,6 +330,12 @@ async function loadPromptList(page = 0) {
         <button class="tbl-btn del-btn"       data-id="${p.id}">Delete</button>
       </td>`;
     tbody.appendChild(tr);
+
+    // Lightbox: click vào thumbnail
+    const thumbEl = tr.querySelector('.thumb');
+    if (thumbEl) {
+      thumbEl.addEventListener('click', () => openLightbox(thumbEl.dataset.src));
+    }
 
     tr.querySelector('.row-check').addEventListener('change', (e) => {
       if (e.target.checked) selectedIds.add(p.id);
