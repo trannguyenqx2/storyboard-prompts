@@ -10,6 +10,7 @@ const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const CATEGORIES = [
   { id: 'all',              label: 'All' },
+  { id: 'ads-storyboard',   label: 'Ads / Storyboard' },
   { id: 'comic-storyboard', label: 'Comic / Storyboard' },
   { id: 'character-sheet',  label: 'Character Sheet' },
   { id: 'anime-manga',      label: 'Anime / Manga' },

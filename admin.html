@@ -12,12 +12,7 @@
     a { text-decoration: none; color: inherit; }
     button { cursor: pointer; font-family: inherit; border: none; }
 
-    /* ── Auth ── */
-    #auth-screen {
-      display: none; position: fixed; inset: 0; z-index: 999;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      align-items: center; justify-content: center;
-    }
+    #auth-screen { display: none; position: fixed; inset: 0; z-index: 999; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); align-items: center; justify-content: center; }
     .auth-box { background: #fff; border-radius: 20px; padding: 48px 40px; width: 360px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); text-align: center; }
     .auth-logo { font-size: 13px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: #667eea; margin-bottom: 8px; }
     .auth-box h2 { font-size: 1.6rem; font-weight: 700; color: #1a1a2e; margin-bottom: 28px; }
@@ -28,7 +23,6 @@
     .btn-login:hover { opacity: 0.9; }
     .btn-login:active { transform: scale(0.98); }
 
-    /* ── Header ── */
     .site-header { background: #fff; border-bottom: 1px solid #e8eaf0; position: sticky; top: 0; z-index: 100; box-shadow: 0 1px 8px rgba(0,0,0,0.06); }
     .header-inner { max-width: 1400px; margin: 0 auto; padding: 0 28px; display: flex; align-items: center; gap: 16px; height: 60px; }
     .logo { font-size: 1.1rem; font-weight: 800; letter-spacing: 0.06em; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -37,7 +31,6 @@
     .header-nav a { font-size: 13px; font-weight: 500; color: #6b7280; padding: 6px 14px; border-radius: 8px; transition: background 0.15s, color 0.15s; }
     .header-nav a:hover { background: #f3f4f6; color: #1a1a2e; }
 
-    /* ── Layout ── */
     .container { max-width: 1400px; margin: 0 auto; padding: 0 28px; }
     #admin-panel { display: none; padding: 32px 0 80px; }
     .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 28px; }
@@ -46,7 +39,6 @@
     .admin-grid { display: grid; grid-template-columns: 440px 1fr; gap: 24px; align-items: start; }
     @media (max-width: 960px) { .admin-grid { grid-template-columns: 1fr; } }
 
-    /* ── Cards ── */
     .form-card, .list-card { background: #fff; border-radius: 16px; border: 1px solid #e8eaf0; box-shadow: 0 2px 12px rgba(0,0,0,0.04); overflow: hidden; }
     .card-header { padding: 20px 24px 16px; border-bottom: 1px solid #f3f4f6; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
     .card-icon { width: 34px; height: 34px; background: linear-gradient(135deg, #667eea22, #764ba222); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
@@ -54,7 +46,6 @@
     #list-info { font-size: 12px; color: #9ca3af; margin-left: auto; }
     .card-body { padding: 20px 24px 24px; }
 
-    /* ── Form ── */
     .form-group { margin-bottom: 16px; }
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     label { display: block; font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 6px; letter-spacing: 0.03em; }
@@ -78,7 +69,6 @@
     #btn-submit:active:not(:disabled) { transform: scale(0.99); }
     #btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    /* ── Bulk bar ── */
     #bulk-bar { display: none; align-items: center; gap: 12px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 10px 16px; margin: 12px 16px 0; }
     #bulk-count { font-size: 13px; font-weight: 600; color: #1d4ed8; }
     #btn-bulk-delete { background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; font-size: 12px; font-weight: 700; padding: 6px 14px; border-radius: 7px; transition: background 0.15s; }
@@ -86,34 +76,29 @@
     #btn-bulk-cancel { background: #f3f4f6; border: 1px solid #e5e7eb; color: #6b7280; font-size: 12px; font-weight: 600; padding: 6px 14px; border-radius: 7px; transition: background 0.15s; }
     #btn-bulk-cancel:hover { background: #e5e7eb; }
 
-    /* ── Table ── */
     .table-wrap { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; }
     thead { background: #f9fafb; }
     th { text-align: left; padding: 11px 12px; font-size: 11px; font-weight: 700; color: #6b7280; letter-spacing: 0.08em; text-transform: uppercase; border-bottom: 1px solid #f3f4f6; white-space: nowrap; }
     th.th-check, td.td-check { width: 36px; text-align: center; padding: 8px; }
     th.th-stt, td.td-stt { width: 44px; text-align: center; font-size: 12px; color: #9ca3af; font-weight: 600; }
-    th.th-thumb { width: 100px; }
+    th.th-thumb { width: 120px; }
     td { padding: 10px 12px; border-bottom: 1px solid #f9fafb; font-size: 13px; color: #374151; vertical-align: middle; }
     tr:last-child td { border-bottom: none; }
     tr:hover td { background: #fafbff; }
     tr.qe-active td { background: #f5f3ff !important; }
-
     .td-title { font-weight: 600; color: #1a1a2e; min-width: 180px; max-width: 260px; }
     .td-title .view-mode { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-    /* Thumbnail — gấp đôi: 104×80 */
     .thumb { width: 104px; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid #e5e7eb; display: block; }
     .thumb-empty { width: 104px; height: 80px; background: #f3f4f6; border-radius: 8px; border: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: center; font-size: 24px; color: #d1d5db; }
 
     .cat-pill { display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 999px; background: #ede9fe; color: #7c3aed; }
 
-    /* Quick edit inputs */
     .qe-title, .qe-desc { width: 100%; padding: 5px 8px; background: #fff; border: 1.5px solid #667eea; border-radius: 6px; font-family: inherit; font-size: 13px; color: #1a1a2e; outline: none; display: block; }
     .qe-desc { font-size: 11px; color: #6b7280; border-color: #c7c4f5; margin-top: 4px; }
     .qe-cat { padding: 5px 8px; background: #fff; border: 1.5px solid #667eea; border-radius: 6px; font-family: inherit; font-size: 12px; outline: none; width: 100%; }
 
-    /* Buttons */
     .tbl-btn { font-size: 11px; font-weight: 600; padding: 5px 10px; border-radius: 6px; margin-right: 3px; margin-bottom: 2px; transition: all 0.15s; display: inline-block; }
     .qedit-btn { background: #f0fdf4; border: 1px solid #bbf7d0; color: #16a34a; font-size: 14px; padding: 4px 8px; }
     .qedit-btn:hover { background: #dcfce7; }
@@ -128,27 +113,23 @@
     .empty-row td { text-align: center; padding: 40px; color: #9ca3af; font-size: 13px; }
     input[type=checkbox] { width: 15px; height: 15px; accent-color: #667eea; cursor: pointer; border: none; background: none; padding: 0; }
 
-    /* ── Pagination ── */
     #pagination { display: flex; gap: 6px; flex-wrap: wrap; padding: 16px; justify-content: center; border-top: 1px solid #f3f4f6; }
     .pg-btn { padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: 600; background: #f3f4f6; border: 1px solid #e5e7eb; color: #374151; transition: all 0.15s; }
     .pg-btn:hover:not(:disabled) { background: #ede9fe; border-color: #c4b5fd; color: #7c3aed; }
     .pg-btn.pg-active { background: linear-gradient(135deg, #667eea, #764ba2); border-color: transparent; color: #fff; }
     .pg-btn.pg-disabled { opacity: 0.35; cursor: not-allowed; }
 
-    /* ── Toast ── */
     #toast { position: fixed; bottom: 28px; right: 28px; z-index: 9999; background: #1a1a2e; color: #fff; font-weight: 600; font-size: 13px; padding: 12px 20px; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); transform: translateY(80px); opacity: 0; transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1); display: flex; align-items: center; gap: 8px; }
     #toast.show { transform: translateY(0); opacity: 1; }
     #toast.success::before { content: '✓'; color: #4ade80; font-weight: 800; }
     #toast.deleted::before { content: '🗑'; }
 
-    /* ── Footer ── */
     .site-footer { border-top: 1px solid #e8eaf0; padding: 20px 0; text-align: center; font-size: 12px; color: #9ca3af; background: #fff; }
     .site-footer a { color: #667eea; font-weight: 500; }
   </style>
 </head>
 <body>
 
-  <!-- ── Auth screen ── -->
   <div id="auth-screen">
     <div class="auth-box">
       <p class="auth-logo">Storyboard Prompts</p>
@@ -159,7 +140,6 @@
     </div>
   </div>
 
-  <!-- ── Header ── -->
   <header class="site-header">
     <div class="header-inner">
       <a href="index.html" class="logo">STORYBOARD</a>
@@ -168,7 +148,6 @@
     </div>
   </header>
 
-  <!-- ── Admin panel ── -->
   <div class="container" id="admin-panel">
     <div class="page-header">
       <div>
@@ -202,15 +181,9 @@
             <div class="form-row">
               <div class="form-group">
                 <label>Category <span class="req">*</span></label>
+                <!-- Build từ CATEGORIES trong supabase.js — không hardcode -->
                 <select id="f-category" required>
                   <option value="">— Select —</option>
-                  <option value="comic-storyboard">Comic / Storyboard</option>
-                  <option value="character-sheet">Character Sheet</option>
-                  <option value="anime-manga">Anime / Manga</option>
-                  <option value="cinematic">Cinematic</option>
-                  <option value="poster-flyer">Poster / Flyer</option>
-                  <option value="infographic">Infographic</option>
-                  <option value="other">Other</option>
                 </select>
               </div>
               <div class="form-group">
@@ -245,7 +218,7 @@
         <div class="card-header">
           <div class="card-icon">📋</div>
           <h2 class="card-title">All Prompts</h2>
-          <span id="list-info" style="font-size:12px;color:#9ca3af;margin-left:auto"></span>
+          <span id="list-info"></span>
         </div>
 
         <div id="bulk-bar">
@@ -273,8 +246,6 @@
             </tbody>
           </table>
         </div>
-
-        <!-- Pagination -->
         <div id="pagination"></div>
       </div>
 

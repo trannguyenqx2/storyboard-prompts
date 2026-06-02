@@ -5,9 +5,7 @@ const SUPABASE_SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzd
 
 const sbAdmin = supabase.createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
-// ── Auth ──────────────────────────────────────────────────
 const ADMIN_PASSWORD = 'Tomato1401@!#';
-
 const PAGE_ADMIN = 100;
 let currentPage = 0;
 let totalCount  = 0;
@@ -40,15 +38,29 @@ document.getElementById('btn-login')?.addEventListener('click', () => {
 
 function showPanel() {
   document.getElementById('admin-panel').style.display = 'block';
+  buildCategorySelect();   // build từ CATEGORIES — 1 nguồn duy nhất
   setupForm();
   setupBulkBar();
 }
 
+// ── Build <select> từ CATEGORIES (supabase.js) ───────────
+function buildCategorySelect() {
+  const sel = document.getElementById('f-category');
+  // Giữ option đầu "— Select —", clear phần còn lại
+  sel.innerHTML = '<option value="">— Select —</option>';
+  CATEGORIES.filter(c => c.id !== 'all').forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c.id;
+    opt.textContent = c.label;
+    sel.appendChild(opt);
+  });
+}
+
 // ── Upload form ───────────────────────────────────────────
 function setupForm() {
-  const form = document.getElementById('prompt-form');
+  const form     = document.getElementById('prompt-form');
   const imgInput = document.getElementById('f-image');
-  const preview = document.getElementById('img-preview');
+  const preview  = document.getElementById('img-preview');
 
   imgInput?.addEventListener('change', () => {
     const file = imgInput.files[0];
@@ -64,7 +76,7 @@ function setupForm() {
     btn.textContent = 'Uploading...';
 
     try {
-      const editId = form.dataset.editId || null;
+      const editId  = form.dataset.editId || null;
       let image_url = document.getElementById('f-image-url').value.trim() || null;
 
       const file = imgInput.files[0];
@@ -145,12 +157,8 @@ function setupBulkBar() {
 function updateBulkBar() {
   const bar   = document.getElementById('bulk-bar');
   const count = document.getElementById('bulk-count');
-  if (selectedIds.size > 0) {
-    bar.style.display = 'flex';
-    count.textContent = `${selectedIds.size} selected`;
-  } else {
-    bar.style.display = 'none';
-  }
+  bar.style.display = selectedIds.size > 0 ? 'flex' : 'none';
+  count.textContent = `${selectedIds.size} selected`;
 }
 
 // ── Prompt list ───────────────────────────────────────────
@@ -176,8 +184,6 @@ async function loadPromptList(page = 0) {
 
   totalCount = count ?? totalCount;
   const totalPages = Math.ceil(totalCount / PAGE_ADMIN);
-
-  // Update header info
   document.getElementById('list-info').textContent =
     `Trang ${page + 1}/${totalPages} — ${totalCount} prompts`;
 
@@ -187,7 +193,6 @@ async function loadPromptList(page = 0) {
     return;
   }
 
-  // Check-all
   document.getElementById('check-all').onchange = (e) => {
     document.querySelectorAll('.row-check').forEach(cb => {
       cb.checked = e.target.checked;
@@ -205,6 +210,10 @@ async function loadPromptList(page = 0) {
       ? `<img src="${escHtml(p.image_url)}" class="thumb" alt="" loading="lazy">`
       : `<div class="thumb-empty">🖼</div>`;
 
+    const catOptions = CATEGORIES.filter(c => c.id !== 'all').map(c =>
+      `<option value="${c.id}" ${c.id === p.category ? 'selected' : ''}>${c.label}</option>`
+    ).join('');
+
     const tr = document.createElement('tr');
     tr.dataset.id = p.id;
     tr.innerHTML = `
@@ -220,20 +229,16 @@ async function loadPromptList(page = 0) {
       </td>
       <td>
         <span class="cat-pill view-mode">${escHtml(catLabel)}</span>
-        <select class="qe-cat edit-mode" style="display:none">
-          ${CATEGORIES.filter(c => c.id !== 'all').map(c =>
-            `<option value="${c.id}" ${c.id === p.category ? 'selected' : ''}>${c.label}</option>`
-          ).join('')}
-        </select>
+        <select class="qe-cat edit-mode" style="display:none">${catOptions}</select>
       </td>
       <td class="view-mode">${escHtml(p.author)}</td>
       <td style="white-space:nowrap">${fmtDate(p.created_at)}</td>
       <td style="white-space:nowrap">
-        <button class="tbl-btn qedit-btn"    data-id="${p.id}" title="Quick Edit">✏️</button>
-        <button class="tbl-btn save-qe-btn"  data-id="${p.id}" style="display:none" title="Save">💾</button>
+        <button class="tbl-btn qedit-btn"     data-id="${p.id}" title="Quick Edit">✏️</button>
+        <button class="tbl-btn save-qe-btn"   data-id="${p.id}" style="display:none" title="Save">💾</button>
         <button class="tbl-btn cancel-qe-btn" data-id="${p.id}" style="display:none" title="Cancel">✕</button>
-        <button class="tbl-btn edit-btn"     data-id="${p.id}">Edit Full</button>
-        <button class="tbl-btn del-btn"      data-id="${p.id}">Delete</button>
+        <button class="tbl-btn edit-btn"      data-id="${p.id}">Edit Full</button>
+        <button class="tbl-btn del-btn"       data-id="${p.id}">Delete</button>
       </td>`;
     tbody.appendChild(tr);
 
@@ -242,10 +247,9 @@ async function loadPromptList(page = 0) {
       else selectedIds.delete(p.id);
       updateBulkBar();
     });
-
-    tr.querySelector('.qedit-btn').addEventListener('click',    () => toggleQE(tr, true));
-    tr.querySelector('.cancel-qe-btn').addEventListener('click',() => toggleQE(tr, false));
-    tr.querySelector('.save-qe-btn').addEventListener('click',  () => saveQE(tr, p.id));
+    tr.querySelector('.qedit-btn').addEventListener('click',     () => toggleQE(tr, true));
+    tr.querySelector('.cancel-qe-btn').addEventListener('click', () => toggleQE(tr, false));
+    tr.querySelector('.save-qe-btn').addEventListener('click',   () => saveQE(tr, p.id));
     tr.querySelector('.del-btn').addEventListener('click',  () => deletePrompt(p.id));
     tr.querySelector('.edit-btn').addEventListener('click', () => editPrompt(p.id));
   });
@@ -270,14 +274,9 @@ function renderPagination(current, total) {
 
   wrap.appendChild(btn('«', 0, current === 0));
   wrap.appendChild(btn('‹', current - 1, current === 0));
-
-  // Show max 7 page buttons
   const start = Math.max(0, current - 3);
   const end   = Math.min(total - 1, start + 6);
-  for (let i = start; i <= end; i++) {
-    wrap.appendChild(btn(i + 1, i, false, i === current));
-  }
-
+  for (let i = start; i <= end; i++) wrap.appendChild(btn(i + 1, i, false, i === current));
   wrap.appendChild(btn('›', current + 1, current === total - 1));
   wrap.appendChild(btn('»', total - 1, current === total - 1));
 }
@@ -318,14 +317,14 @@ async function editPrompt(id) {
   const { data } = await sbAdmin.from('prompts').select('*').eq('id', id).single();
   if (!data) return;
 
-  document.getElementById('form-title').textContent     = 'Edit Prompt';
-  document.getElementById('f-title').value              = data.title;
-  document.getElementById('f-description').value        = data.description || '';
-  document.getElementById('f-prompt').value             = data.prompt;
-  document.getElementById('f-category').value           = data.category;
-  document.getElementById('f-author').value             = data.author || '';
-  document.getElementById('f-tags').value               = (data.tags || []).join(', ');
-  document.getElementById('f-image-url').value          = data.image_url || '';
+  document.getElementById('form-title').textContent = 'Edit Prompt';
+  document.getElementById('f-title').value          = data.title;
+  document.getElementById('f-description').value    = data.description || '';
+  document.getElementById('f-prompt').value         = data.prompt;
+  document.getElementById('f-category').value       = data.category;
+  document.getElementById('f-author').value         = data.author || '';
+  document.getElementById('f-tags').value           = (data.tags || []).join(', ');
+  document.getElementById('f-image-url').value      = data.image_url || '';
 
   if (data.image_url) {
     const preview = document.getElementById('img-preview');
