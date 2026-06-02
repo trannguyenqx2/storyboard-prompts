@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Storyboard Prompts — AI Image Generation Gallery</title>
+  <meta name="description" content="Browse hundreds of AI storyboard, character sheet, anime, and cinematic prompts for GPT Image 2, Veo, and more.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="page">
+
+  <!-- ── Header ── -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="logo">STORY<span>BOARD</span></a>
+      <nav class="header-nav">
+        <a href="index.html" class="active">Gallery</a>
+        <a href="admin.html">Admin</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ── Hero ── -->
+  <section class="hero">
+    <div class="container">
+      <p class="hero-eyebrow">AI Prompt Collection</p>
+      <h1>STORYBOARD &amp; <em>PROMPT</em> GALLERY</h1>
+      <p class="hero-sub">Curated AI image prompts for storyboards, character sheets, anime, and cinematic scenes.</p>
+      <div class="count-badge">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="var(--accent)" stroke="none"><circle cx="12" cy="12" r="10"/></svg>
+        <span id="count">Loading…</span>
+      </div>
+      <br><br>
+      <div class="search-wrap">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="search" placeholder="Search prompts…" autocomplete="off">
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Categories ── -->
+  <section class="cat-section">
+    <div class="container">
+      <p class="cat-label">Category</p>
+      <div id="cat-nav"></div>
+    </div>
+  </section>
+
+  <!-- ── Toolbar ── -->
+  <div class="container">
+    <div class="toolbar">
+      <span class="toolbar-count" id="count-label"></span>
+    </div>
+  </div>
+
+  <!-- ── Grid ── -->
+  <main class="container">
+    <div id="grid">
+      <!-- skeleton placeholders while loading -->
+      <div id="skeletons" style="display:contents">
+        <!-- 6 skeletons -->
+        <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line w60"></div><div class="skeleton-line w80"></div><div class="skeleton-line w40"></div></div></div>
+        <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line w80"></div><div class="skeleton-line w60"></div><div class="skeleton-line w40"></div></div></div>
+        <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line w40"></div><div class="skeleton-line w80"></div><div class="skeleton-line w60"></div></div></div>
+        <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line w60"></div><div class="skeleton-line w40"></div><div class="skeleton-line w80"></div></div></div>
+        <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line w80"></div><div class="skeleton-line w60"></div><div class="skeleton-line w40"></div></div></div>
+        <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line w40"></div><div class="skeleton-line w80"></div><div class="skeleton-line w60"></div></div></div>
+      </div>
+    </div>
+
+    <!-- infinite scroll sentinel -->
+    <div id="sentinel" style="height:1px"></div>
+  </main>
+
+  <!-- ── Footer ── -->
+  <footer class="site-footer">
+    <div class="container">
+      <p>Built with ❤ by <a href="#">LeeveoAI</a> · Powered by Supabase + GitHub Pages</p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

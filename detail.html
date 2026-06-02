@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Prompt Detail — Storyboard Prompts</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="page">
+
+  <!-- ── Header ── -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="logo">STORY<span>BOARD</span></a>
+      <nav class="header-nav">
+        <a href="index.html">Gallery</a>
+        <a href="admin.html">Admin</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="detail-back">
+      <a href="index.html">← Back to Gallery</a>
+    </div>
+  </div>
+
+  <!-- ── Detail content ── -->
+  <div class="container" id="detail-content">
+    <div class="detail-layout">
+
+      <!-- Left: image -->
+      <div>
+        <div class="detail-img-wrap">
+          <img id="detail-img" src="" alt="">
+        </div>
+      </div>
+
+      <!-- Right: info + prompt -->
+      <div>
+        <div class="detail-meta">
+          <span class="detail-cat" id="detail-category"></span>
+          <span class="detail-date" id="detail-date"></span>
+        </div>
+
+        <h1 class="detail-title" id="detail-title">Loading…</h1>
+        <p class="detail-author">by <span id="detail-author"></span></p>
+
+        <div class="detail-prompt-box" id="detail-prompt"></div>
+
+        <button id="btn-copy-full">Copy Prompt</button>
+
+        <div class="detail-tags" id="detail-tags"></div>
+      </div>
+
+    </div>
+
+    <!-- Related -->
+    <div id="related-section">
+      <p class="related-label">RELATED PROMPTS</p>
+      <div id="related-grid"></div>
+    </div>
+  </div>
+
+  <!-- ── Footer ── -->
+  <footer class="site-footer">
+    <div class="container">
+      <p>Built with ❤ by <a href="#">LeeveoAI</a> · Powered by Supabase + GitHub Pages</p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/detail.js"></script>
+</body>
+</html>

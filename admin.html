@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin — Storyboard Prompts</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="page">
+
+  <!-- ── Auth screen ── -->
+  <div id="auth-screen">
+    <div class="auth-box">
+      <h2>ADMIN LOGIN</h2>
+      <input type="password" id="admin-pw" placeholder="Password" autocomplete="current-password">
+      <div id="auth-error"></div>
+      <button class="btn-primary" id="btn-login" style="width:100%;padding:11px">Login</button>
+    </div>
+  </div>
+
+  <!-- ── Header ── -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="logo">STORY<span>BOARD</span></a>
+      <nav class="header-nav">
+        <a href="index.html">← Gallery</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ── Admin panel ── -->
+  <div class="container" id="admin-panel">
+    <h1 class="admin-title">ADMIN PANEL</h1>
+
+    <div class="admin-grid">
+
+      <!-- Form -->
+      <div class="form-card">
+        <h2 id="form-title">Add New Prompt</h2>
+
+        <form id="prompt-form">
+          <div class="form-group">
+            <label>Title *</label>
+            <input type="text" id="f-title" placeholder="e.g. Cinematic Samurai Storyboard" required>
+          </div>
+
+          <div class="form-group">
+            <label>Prompt Text *</label>
+            <textarea id="f-prompt" placeholder="Full prompt text…" required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Category *</label>
+            <select id="f-category" required>
+              <option value="">— Select —</option>
+              <option value="comic-storyboard">Comic / Storyboard</option>
+              <option value="character-sheet">Character Sheet</option>
+              <option value="anime-manga">Anime / Manga</option>
+              <option value="cinematic">Cinematic</option>
+              <option value="poster-flyer">Poster / Flyer</option>
+              <option value="infographic">Infographic</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Author</label>
+            <input type="text" id="f-author" placeholder="LeeveoAI">
+          </div>
+
+          <div class="form-group">
+            <label>Tags (comma separated)</label>
+            <input type="text" id="f-tags" placeholder="anime, storyboard, dark fantasy">
+          </div>
+
+          <div class="form-group">
+            <label>Image — Upload file</label>
+            <input type="file" id="f-image" accept="image/*">
+            <img id="img-preview" src="" alt="Preview">
+          </div>
+
+          <div class="form-group">
+            <label>Image — or paste URL</label>
+            <input type="url" id="f-image-url" placeholder="https://…">
+          </div>
+
+          <button type="submit" id="btn-submit">Save Prompt</button>
+        </form>
+      </div>
+
+      <!-- List -->
+      <div class="list-card">
+        <h2 class="list-title">All Prompts</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Author</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="list-body">
+              <tr><td colspan="5">Login to view…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast"></div>
+
+  <!-- ── Footer ── -->
+  <footer class="site-footer">
+    <div class="container">
+      <p>Admin Panel · <a href="index.html">← Back to Gallery</a></p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>
