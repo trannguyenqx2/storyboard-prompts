@@ -10,6 +10,12 @@ const PAGE_ADMIN = 100;
 let currentPage = 0;
 let totalCount  = 0;
 
+// ── Filter state ──────────────────────────────────────────
+let filterSearch   = '';
+let filterCategory = '';
+let filterAuthor   = '';
+let searchTimer;
+
 document.addEventListener('DOMContentLoaded', () => {
   checkAuth();
   setupLightbox();
@@ -39,6 +45,8 @@ async function showPanel() {
   document.getElementById('admin-panel').style.display = 'block';
   await loadCategories();
   buildCategorySelect();
+  buildFilterCategorySelect();
+  setupFilters();
   setupForm();
   setupBulkBar();
   setupCategoryManager();
@@ -47,36 +55,26 @@ async function showPanel() {
 
 // ── Lightbox ──────────────────────────────────────────────
 function setupLightbox() {
-  const lb    = document.getElementById('lightbox');
-  const lbImg = document.getElementById('lightbox-img');
+  const lb      = document.getElementById('lightbox');
   const lbClose = document.getElementById('lightbox-close');
-
-  // Đóng khi click nền hoặc nút X
   lb.addEventListener('click', (e) => {
     if (e.target === lb || e.target === lbClose) closeLightbox();
   });
-
-  // Đóng bằng phím Esc
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeLightbox();
   });
 }
-
 function openLightbox(src) {
-  const lb    = document.getElementById('lightbox');
-  const lbImg = document.getElementById('lightbox-img');
-  lbImg.src = src;
-  lb.classList.add('open');
+  document.getElementById('lightbox-img').src = src;
+  document.getElementById('lightbox').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
-
 function closeLightbox() {
-  const lb = document.getElementById('lightbox');
-  lb.classList.remove('open');
+  document.getElementById('lightbox').classList.remove('open');
   document.body.style.overflow = '';
 }
 
-// ── Build <select> từ CATEGORIES ─────────────────────────
+// ── Build selects ─────────────────────────────────────────
 function buildCategorySelect() {
   const sel = document.getElementById('f-category');
   sel.innerHTML = '<option value="">— Select —</option>';
@@ -85,6 +83,55 @@ function buildCategorySelect() {
     opt.value = c.id;
     opt.textContent = c.label;
     sel.appendChild(opt);
+  });
+}
+
+function buildFilterCategorySelect() {
+  const sel = document.getElementById('filter-category');
+  if (!sel) return;
+  sel.innerHTML = '<option value="">All Categories</option>';
+  CATEGORIES.filter(c => c.id !== 'all').forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c.id;
+    opt.textContent = c.label;
+    sel.appendChild(opt);
+  });
+}
+
+// ── Filters ───────────────────────────────────────────────
+function setupFilters() {
+  const searchEl   = document.getElementById('filter-search');
+  const categoryEl = document.getElementById('filter-category');
+  const authorEl   = document.getElementById('filter-author');
+  const resetEl    = document.getElementById('filter-reset');
+
+  searchEl?.addEventListener('input', () => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => {
+      filterSearch = searchEl.value.trim();
+      loadPromptList(0);
+    }, 350);
+  });
+
+  categoryEl?.addEventListener('change', () => {
+    filterCategory = categoryEl.value;
+    loadPromptList(0);
+  });
+
+  authorEl?.addEventListener('input', () => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => {
+      filterAuthor = authorEl.value.trim();
+      loadPromptList(0);
+    }, 350);
+  });
+
+  resetEl?.addEventListener('click', () => {
+    filterSearch = filterCategory = filterAuthor = '';
+    if (searchEl)   searchEl.value   = '';
+    if (categoryEl) categoryEl.value = '';
+    if (authorEl)   authorEl.value   = '';
+    loadPromptList(0);
   });
 }
 
@@ -105,16 +152,14 @@ function setupCategoryManager() {
     const maxOrder = CATEGORIES.filter(c => c.id !== 'all')
       .reduce((m, c) => Math.max(m, c.order ?? 0), 0);
 
-    const { error } = await sbAdmin.from('categories').insert({
-      id, label, order: maxOrder + 1
-    });
-
+    const { error } = await sbAdmin.from('categories').insert({ id, label, order: maxOrder + 1 });
     if (error) { alert('Error: ' + error.message); return; }
 
     labelEl.value = '';
     showToast(`Added "${label}"`, 'success');
     await loadCategories();
     buildCategorySelect();
+    buildFilterCategorySelect();
     renderCategoryList();
   });
 }
@@ -142,6 +187,7 @@ async function deleteCategory(id, label) {
   showToast(`Deleted "${label}"`, 'deleted');
   await loadCategories();
   buildCategorySelect();
+  buildFilterCategorySelect();
   renderCategoryList();
 }
 
@@ -261,10 +307,17 @@ async function loadPromptList(page = 0) {
   const from = page * PAGE_ADMIN;
   const to   = from + PAGE_ADMIN - 1;
 
-  const { data, error, count } = await sbAdmin.from('prompts')
+  let query = sbAdmin.from('prompts')
     .select('id, title, description, category, author, image_url, created_at', { count: 'exact' })
     .order('created_at', { ascending: false })
     .range(from, to);
+
+  // Áp dụng filters
+  if (filterSearch)   query = query.ilike('title', `%${filterSearch}%`);
+  if (filterCategory) query = query.eq('category', filterCategory);
+  if (filterAuthor)   query = query.ilike('author', `%${filterAuthor}%`);
+
+  const { data, error, count } = await query;
 
   if (error || !data) {
     tbody.innerHTML = `<tr class="empty-row"><td colspan="8">Error loading.</td></tr>`;
@@ -272,12 +325,12 @@ async function loadPromptList(page = 0) {
   }
 
   totalCount = count ?? totalCount;
-  const totalPages = Math.ceil(totalCount / PAGE_ADMIN);
+  const totalPages = Math.ceil(totalCount / PAGE_ADMIN) || 1;
   document.getElementById('list-info').textContent =
     `Trang ${page + 1}/${totalPages} — ${totalCount} prompts`;
 
   if (!data.length) {
-    tbody.innerHTML = `<tr class="empty-row"><td colspan="8">No prompts on this page.</td></tr>`;
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="8">No prompts found.</td></tr>`;
     renderPagination(page, totalPages);
     return;
   }
@@ -331,11 +384,8 @@ async function loadPromptList(page = 0) {
       </td>`;
     tbody.appendChild(tr);
 
-    // Lightbox: click vào thumbnail
     const thumbEl = tr.querySelector('.thumb');
-    if (thumbEl) {
-      thumbEl.addEventListener('click', () => openLightbox(thumbEl.dataset.src));
-    }
+    if (thumbEl) thumbEl.addEventListener('click', () => openLightbox(thumbEl.dataset.src));
 
     tr.querySelector('.row-check').addEventListener('change', (e) => {
       if (e.target.checked) selectedIds.add(p.id);
