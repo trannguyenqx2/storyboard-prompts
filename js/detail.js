@@ -23,6 +23,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('detail-author').textContent = data.author || 'Anonymous';
   document.getElementById('detail-prompt').textContent = data.prompt;
 
+  // Description
+  const descEl = document.getElementById('detail-desc');
+  if (data.description) {
+    descEl.textContent = data.description;
+    descEl.style.display = 'block';
+  } else {
+    descEl.style.display = 'none';
+  }
+
   if (data.image_url) {
     const img = document.getElementById('detail-img');
     img.src = data.image_url;

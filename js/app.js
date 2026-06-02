@@ -9,28 +9,22 @@ let state = {
   items: [],
 };
 
-// ── DOM refs ──────────────────────────────────────────────
-const grid       = document.getElementById('grid');
-const sentinel   = document.getElementById('sentinel');
-const searchEl   = document.getElementById('search');
-const countEl    = document.getElementById('count');
-const skeletons  = document.getElementById('skeletons');
+const grid      = document.getElementById('grid');
+const sentinel  = document.getElementById('sentinel');
+const searchEl  = document.getElementById('search');
+const countEl   = document.getElementById('count');
+const skeletons = document.getElementById('skeletons');
 
-// ── Init ──────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   buildCategoryTabs();
-
-  // URL param → category
   const params = new URLSearchParams(location.search);
   const cat = params.get('categories');
   if (cat) setCategory(cat);
-
   loadPage(true);
   setupIntersectionObserver();
   setupSearch();
 });
 
-// ── Category tabs ─────────────────────────────────────────
 function buildCategoryTabs() {
   const nav = document.getElementById('cat-nav');
   CATEGORIES.forEach(c => {
@@ -55,7 +49,6 @@ function setCategory(id) {
   loadPage(true);
 }
 
-// ── Search ────────────────────────────────────────────────
 function setupSearch() {
   let timer;
   searchEl.addEventListener('input', () => {
@@ -67,7 +60,6 @@ function setupSearch() {
   });
 }
 
-// ── Data ──────────────────────────────────────────────────
 async function loadPage(reset = false) {
   if (state.loading) return;
   if (!reset && !state.hasMore) return;
@@ -83,7 +75,7 @@ async function loadPage(reset = false) {
   showSkeletons(true);
 
   let query = sb.from('prompts')
-    .select('id, title, prompt, category, image_url, author, tags, created_at', { count: 'exact' })
+    .select('id, title, description, prompt, category, image_url, author, tags, created_at', { count: 'exact' })
     .order('created_at', { ascending: false })
     .range(state.page * PAGE_SIZE, (state.page + 1) * PAGE_SIZE - 1);
 
@@ -100,9 +92,7 @@ async function loadPage(reset = false) {
 
   if (error) { console.error(error); return; }
 
-  if (reset && countEl) {
-    countEl.textContent = `${count ?? 0} prompts`;
-  }
+  if (reset && countEl) countEl.textContent = `${count ?? 0} prompts`;
 
   if (!data || data.length < PAGE_SIZE) state.hasMore = false;
   state.items = [...state.items, ...(data || [])];
@@ -111,7 +101,6 @@ async function loadPage(reset = false) {
   renderCards(data || [], reset);
 }
 
-// ── Render ────────────────────────────────────────────────
 function renderCards(items, reset) {
   if (reset && items.length === 0) {
     grid.innerHTML = `<div class="empty">No prompts found. Try a different search.</div>`;
@@ -127,8 +116,12 @@ function renderCards(items, reset) {
       ? `<div class="card-img"><img src="${escHtml(p.image_url)}" alt="${escHtml(p.title)}" loading="lazy"></div>`
       : `<div class="card-img no-img"><span>${escHtml(p.category)}</span></div>`;
 
-    const excerpt = p.prompt.length > 120
-      ? escHtml(p.prompt.slice(0, 120)) + '…'
+    const descHtml = p.description
+      ? `<p class="card-desc">${escHtml(p.description.length > 90 ? p.description.slice(0, 90) + '…' : p.description)}</p>`
+      : '';
+
+    const excerpt = p.prompt.length > 100
+      ? escHtml(p.prompt.slice(0, 100)) + '…'
       : escHtml(p.prompt);
 
     const catLabel = CATEGORIES.find(c => c.id === p.category)?.label || p.category;
@@ -141,10 +134,11 @@ function renderCards(items, reset) {
           <span class="card-date">${fmtDate(p.created_at)}</span>
         </div>
         <h2 class="card-title">${escHtml(p.title)}</h2>
+        ${descHtml}
         <p class="card-excerpt">${excerpt}</p>
         <div class="card-footer">
-          <button class="btn-copy" data-id="${p.id}" title="Copy prompt">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          <button class="btn-copy" title="Copy prompt">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
             Copy
           </button>
           <a class="btn-view" href="detail.html?id=${p.id}">View →</a>
@@ -160,7 +154,6 @@ function renderCards(items, reset) {
   });
 }
 
-// ── Infinite scroll ───────────────────────────────────────
 function setupIntersectionObserver() {
   const obs = new IntersectionObserver(entries => {
     if (entries[0].isIntersecting) loadPage();
@@ -168,31 +161,25 @@ function setupIntersectionObserver() {
   obs.observe(sentinel);
 }
 
-// ── Copy ──────────────────────────────────────────────────
 async function copyPrompt(text, btn) {
   try {
     await navigator.clipboard.writeText(text);
     const orig = btn.innerHTML;
-    btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Copied!`;
+    btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Copied!`;
     btn.classList.add('copied');
     setTimeout(() => { btn.innerHTML = orig; btn.classList.remove('copied'); }, 1800);
-  } catch {
-    btn.textContent = 'Error';
-  }
+  } catch { btn.textContent = 'Error'; }
 }
 
-// ── Skeletons ─────────────────────────────────────────────
 function showSkeletons(show) {
   if (!skeletons) return;
   skeletons.style.display = show ? 'contents' : 'none';
 }
 
-// ── Utils ─────────────────────────────────────────────────
 function escHtml(s) {
   return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 function fmtDate(iso) {
   if (!iso) return '';
-  const d = new Date(iso);
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
