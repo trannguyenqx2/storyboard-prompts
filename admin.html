@@ -39,7 +39,8 @@
     .admin-grid { display: grid; grid-template-columns: 440px 1fr; gap: 24px; align-items: start; }
     @media (max-width: 960px) { .admin-grid { grid-template-columns: 1fr; } }
 
-    .form-card, .list-card { background: #fff; border-radius: 16px; border: 1px solid #e8eaf0; box-shadow: 0 2px 12px rgba(0,0,0,0.04); overflow: hidden; }
+    .form-card, .list-card, .cat-manager-card { background: #fff; border-radius: 16px; border: 1px solid #e8eaf0; box-shadow: 0 2px 12px rgba(0,0,0,0.04); overflow: hidden; }
+    .cat-manager-card { margin-top: 24px; }
     .card-header { padding: 20px 24px 16px; border-bottom: 1px solid #f3f4f6; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
     .card-icon { width: 34px; height: 34px; background: linear-gradient(135deg, #667eea22, #764ba222); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
     .card-title { font-size: 15px; font-weight: 700; color: #1a1a2e; }
@@ -68,6 +69,16 @@
     #btn-submit:hover:not(:disabled) { opacity: 0.9; }
     #btn-submit:active:not(:disabled) { transform: scale(0.99); }
     #btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* Category Manager */
+    .cat-add-row { display: flex; gap: 10px; margin-bottom: 16px; }
+    .cat-add-row input { flex: 1; }
+    #btn-add-cat { padding: 10px 18px; background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; font-weight: 700; font-size: 13px; border-radius: 10px; white-space: nowrap; transition: opacity 0.2s; }
+    #btn-add-cat:hover { opacity: 0.88; }
+    #cat-list { display: flex; flex-direction: column; gap: 8px; }
+    .cat-row { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 10px; }
+    .cat-row-label { font-weight: 600; color: #1a1a2e; flex: 1; }
+    .cat-row-id { font-size: 11px; color: #9ca3af; background: #f3f4f6; padding: 2px 8px; border-radius: 5px; }
 
     #bulk-bar { display: none; align-items: center; gap: 12px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 10px 16px; margin: 12px 16px 0; }
     #bulk-count { font-size: 13px; font-weight: 600; color: #1d4ed8; }
@@ -158,62 +169,82 @@
 
     <div class="admin-grid">
 
-      <!-- ── Form ── -->
-      <div class="form-card">
-        <div class="card-header">
-          <div class="card-icon">✏️</div>
-          <h2 class="card-title" id="form-title">Add New Prompt</h2>
+      <!-- ── Cột trái: Form + Category Manager ── -->
+      <div>
+        <!-- Form thêm/sửa prompt -->
+        <div class="form-card">
+          <div class="card-header">
+            <div class="card-icon">✏️</div>
+            <h2 class="card-title" id="form-title">Add New Prompt</h2>
+          </div>
+          <div class="card-body">
+            <form id="prompt-form">
+              <div class="form-group">
+                <label>Title <span class="req">*</span></label>
+                <input type="text" id="f-title" placeholder="e.g. Cinematic Samurai Storyboard" required>
+              </div>
+              <div class="form-group">
+                <label>Description</label>
+                <input type="text" id="f-description" placeholder="Brief description of this prompt…">
+              </div>
+              <div class="form-group">
+                <label>Prompt Text <span class="req">*</span></label>
+                <textarea id="f-prompt" placeholder="Full prompt text…" required></textarea>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Category <span class="req">*</span></label>
+                  <!-- Được build động từ CATEGORIES (Supabase) bởi admin.js -->
+                  <select id="f-category" required>
+                    <option value="">— Select —</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Author</label>
+                  <input type="text" id="f-author" placeholder="LeeveoAI">
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Tags <span style="color:#9ca3af;font-weight:400">(comma separated)</span></label>
+                <input type="text" id="f-tags" placeholder="anime, storyboard, dark fantasy">
+              </div>
+              <div class="form-group">
+                <label>Image</label>
+                <div class="file-upload-wrap">
+                  <input type="file" id="f-image" accept="image/*">
+                  <div class="upload-icon">🖼️</div>
+                  <p class="upload-text"><strong>Click to upload</strong> or drag & drop</p>
+                </div>
+                <img id="img-preview" src="" alt="Preview">
+              </div>
+              <div class="divider">OR PASTE URL</div>
+              <div class="form-group">
+                <input type="url" id="f-image-url" placeholder="https://…">
+              </div>
+              <button type="submit" id="btn-submit">Save Prompt</button>
+            </form>
+          </div>
         </div>
-        <div class="card-body">
-          <form id="prompt-form">
-            <div class="form-group">
-              <label>Title <span class="req">*</span></label>
-              <input type="text" id="f-title" placeholder="e.g. Cinematic Samurai Storyboard" required>
+
+        <!-- Category Manager -->
+        <div class="cat-manager-card">
+          <div class="card-header">
+            <div class="card-icon">🏷️</div>
+            <h2 class="card-title">Category Manager</h2>
+          </div>
+          <div class="card-body">
+            <div class="cat-add-row">
+              <input type="text" id="new-cat-label" placeholder="Tên category mới, vd: Concept Art">
+              <button id="btn-add-cat">+ Add</button>
             </div>
-            <div class="form-group">
-              <label>Description</label>
-              <input type="text" id="f-description" placeholder="Brief description of this prompt…">
+            <div id="cat-list">
+              <!-- Được render bởi admin.js -->
             </div>
-            <div class="form-group">
-              <label>Prompt Text <span class="req">*</span></label>
-              <textarea id="f-prompt" placeholder="Full prompt text…" required></textarea>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label>Category <span class="req">*</span></label>
-                <!-- Build từ CATEGORIES trong supabase.js — không hardcode -->
-                <select id="f-category" required>
-                  <option value="">— Select —</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label>Author</label>
-                <input type="text" id="f-author" placeholder="LeeveoAI">
-              </div>
-            </div>
-            <div class="form-group">
-              <label>Tags <span style="color:#9ca3af;font-weight:400">(comma separated)</span></label>
-              <input type="text" id="f-tags" placeholder="anime, storyboard, dark fantasy">
-            </div>
-            <div class="form-group">
-              <label>Image</label>
-              <div class="file-upload-wrap">
-                <input type="file" id="f-image" accept="image/*">
-                <div class="upload-icon">🖼️</div>
-                <p class="upload-text"><strong>Click to upload</strong> or drag & drop</p>
-              </div>
-              <img id="img-preview" src="" alt="Preview">
-            </div>
-            <div class="divider">OR PASTE URL</div>
-            <div class="form-group">
-              <input type="url" id="f-image-url" placeholder="https://…">
-            </div>
-            <button type="submit" id="btn-submit">Save Prompt</button>
-          </form>
+          </div>
         </div>
       </div>
 
-      <!-- ── List ── -->
+      <!-- ── Cột phải: Danh sách prompts ── -->
       <div class="list-card">
         <div class="card-header">
           <div class="card-icon">📋</div>

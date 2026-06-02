@@ -18,7 +18,6 @@ function checkAuth() {
   const authed = sessionStorage.getItem('admin_authed');
   if (authed === '1') {
     showPanel();
-    loadPromptList(0);
   } else {
     document.getElementById('auth-screen').style.display = 'flex';
   }
@@ -30,23 +29,25 @@ document.getElementById('btn-login')?.addEventListener('click', () => {
     sessionStorage.setItem('admin_authed', '1');
     document.getElementById('auth-screen').style.display = 'none';
     showPanel();
-    loadPromptList(0);
   } else {
     document.getElementById('auth-error').textContent = 'Wrong password.';
   }
 });
 
-function showPanel() {
+async function showPanel() {
   document.getElementById('admin-panel').style.display = 'block';
-  buildCategorySelect();   // build từ CATEGORIES — 1 nguồn duy nhất
+  // Load categories từ Supabase trước, rồi mới build UI
+  await loadCategories();
+  buildCategorySelect();
   setupForm();
   setupBulkBar();
+  setupCategoryManager();
+  loadPromptList(0);
 }
 
-// ── Build <select> từ CATEGORIES (supabase.js) ───────────
+// ── Build <select> từ CATEGORIES (load từ Supabase) ───────
 function buildCategorySelect() {
   const sel = document.getElementById('f-category');
-  // Giữ option đầu "— Select —", clear phần còn lại
   sel.innerHTML = '<option value="">— Select —</option>';
   CATEGORIES.filter(c => c.id !== 'all').forEach(c => {
     const opt = document.createElement('option');
@@ -54,6 +55,68 @@ function buildCategorySelect() {
     opt.textContent = c.label;
     sel.appendChild(opt);
   });
+}
+
+// ── Category Manager ──────────────────────────────────────
+function setupCategoryManager() {
+  renderCategoryList();
+
+  document.getElementById('btn-add-cat')?.addEventListener('click', async () => {
+    const labelEl = document.getElementById('new-cat-label');
+    const label = labelEl.value.trim();
+    if (!label) return;
+
+    // Tạo id từ label: chữ thường, thay space/đặc biệt bằng '-'
+    const id = label.toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')  // bỏ dấu
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '');
+
+    // Lấy order lớn nhất hiện tại
+    const maxOrder = CATEGORIES.filter(c => c.id !== 'all')
+      .reduce((m, c) => Math.max(m, c.order ?? 0), 0);
+
+    const { error } = await sbAdmin.from('categories').insert({
+      id, label, order: maxOrder + 1
+    });
+
+    if (error) {
+      alert('Error: ' + error.message);
+      return;
+    }
+
+    labelEl.value = '';
+    showToast(`Added "${label}"`, 'success');
+    await loadCategories();
+    buildCategorySelect();
+    renderCategoryList();
+  });
+}
+
+function renderCategoryList() {
+  const wrap = document.getElementById('cat-list');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  CATEGORIES.filter(c => c.id !== 'all').forEach(c => {
+    const row = document.createElement('div');
+    row.className = 'cat-row';
+    row.innerHTML = `
+      <span class="cat-row-label">${escHtml(c.label)}</span>
+      <code class="cat-row-id">${escHtml(c.id)}</code>
+      <button class="tbl-btn del-btn cat-del-btn" data-id="${escHtml(c.id)}">Delete</button>`;
+    row.querySelector('.cat-del-btn').addEventListener('click', () => deleteCategory(c.id, c.label));
+    wrap.appendChild(row);
+  });
+}
+
+async function deleteCategory(id, label) {
+  if (!confirm(`Delete category "${label}"?\nPrompts dùng category này sẽ không bị xóa.`)) return;
+  const { error } = await sbAdmin.from('categories').delete().eq('id', id);
+  if (error) { alert('Error: ' + error.message); return; }
+  showToast(`Deleted "${label}"`, 'deleted');
+  await loadCategories();
+  buildCategorySelect();
+  renderCategoryList();
 }
 
 // ── Upload form ───────────────────────────────────────────

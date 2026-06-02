@@ -15,7 +15,9 @@ const searchEl  = document.getElementById('search');
 const countEl   = document.getElementById('count');
 const skeletons = document.getElementById('skeletons');
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  // Load categories từ Supabase trước, rồi mới build UI
+  await loadCategories();
   buildCategoryTabs();
   const params = new URLSearchParams(location.search);
   const cat = params.get('categories');
@@ -27,6 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function buildCategoryTabs() {
   const nav = document.getElementById('cat-nav');
+  nav.innerHTML = ''; // clear nếu có gì cũ
   CATEGORIES.forEach(c => {
     const btn = document.createElement('button');
     btn.className = 'cat-btn' + (c.id === state.category ? ' active' : '');

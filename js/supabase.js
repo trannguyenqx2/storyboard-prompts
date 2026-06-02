@@ -8,16 +8,19 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const { createClient } = supabase;
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-const CATEGORIES = [
-  { id: 'all',              label: 'All' },
-  { id: 'ads-storyboard',   label: 'Ads / Storyboard' },
-  { id: 'comic-storyboard', label: 'Comic / Storyboard' },
-  { id: 'character-sheet',  label: 'Character Sheet' },
-  { id: 'anime-manga',      label: 'Anime / Manga' },
-  { id: 'cinematic',        label: 'Cinematic' },
-  { id: 'poster-flyer',     label: 'Poster / Flyer' },
-  { id: 'infographic',      label: 'Infographic' },
-  { id: 'other',            label: 'Other' },
-];
+// CATEGORIES load động từ Supabase (bảng `categories`)
+// Fallback tạm thời — app.js & admin.js đều gọi loadCategories() trước khi dùng.
+let CATEGORIES = [{ id: 'all', label: 'All' }];
+
+async function loadCategories() {
+  const { data, error } = await sb
+    .from('categories')
+    .select('id, label, "order"')
+    .order('order', { ascending: true });
+  if (!error && data && data.length) {
+    CATEGORIES = [{ id: 'all', label: 'All' }, ...data];
+  }
+  return CATEGORIES;
+}
 
 const PAGE_SIZE = 12;
