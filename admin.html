@@ -4,24 +4,315 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Admin — Storyboard Prompts</title>
-  <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f5f6fa;
+      color: #1a1a2e;
+      font-size: 14px;
+      min-height: 100vh;
+    }
+    a { text-decoration: none; color: inherit; }
+    button { cursor: pointer; font-family: inherit; border: none; }
+
+    /* ── Auth ── */
+    #auth-screen {
+      display: none;
+      position: fixed; inset: 0; z-index: 999;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      align-items: center; justify-content: center;
+    }
+    .auth-box {
+      background: #fff;
+      border-radius: 20px;
+      padding: 48px 40px;
+      width: 360px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+      text-align: center;
+    }
+    .auth-logo {
+      font-size: 13px; font-weight: 700;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: #667eea; margin-bottom: 8px;
+    }
+    .auth-box h2 {
+      font-size: 1.6rem; font-weight: 700;
+      color: #1a1a2e; margin-bottom: 28px;
+    }
+    .auth-box input {
+      width: 100%; padding: 12px 16px;
+      border: 2px solid #e8eaf0;
+      border-radius: 10px;
+      font-family: inherit; font-size: 14px;
+      color: #1a1a2e; margin-bottom: 10px;
+      outline: none; transition: border-color 0.2s;
+    }
+    .auth-box input:focus { border-color: #667eea; }
+    #auth-error { font-size: 12px; color: #ef4444; min-height: 16px; margin-bottom: 12px; }
+    .btn-login {
+      width: 100%; padding: 13px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #fff; font-weight: 700; font-size: 14px;
+      border-radius: 10px; letter-spacing: 0.05em;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+    .btn-login:hover { opacity: 0.9; }
+    .btn-login:active { transform: scale(0.98); }
+
+    /* ── Header ── */
+    .site-header {
+      background: #fff;
+      border-bottom: 1px solid #e8eaf0;
+      position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+    }
+    .header-inner {
+      max-width: 1400px; margin: 0 auto;
+      padding: 0 28px;
+      display: flex; align-items: center; gap: 16px;
+      height: 60px;
+    }
+    .logo {
+      font-size: 1.1rem; font-weight: 800;
+      letter-spacing: 0.06em;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .header-badge {
+      background: linear-gradient(135deg, #667eea22, #764ba222);
+      color: #667eea; font-size: 11px; font-weight: 700;
+      padding: 3px 10px; border-radius: 999px;
+      letter-spacing: 0.08em;
+    }
+    .header-nav { margin-left: auto; display: flex; gap: 8px; }
+    .header-nav a {
+      font-size: 13px; font-weight: 500; color: #6b7280;
+      padding: 6px 14px; border-radius: 8px;
+      transition: background 0.15s, color 0.15s;
+    }
+    .header-nav a:hover { background: #f3f4f6; color: #1a1a2e; }
+
+    /* ── Layout ── */
+    .container { max-width: 1400px; margin: 0 auto; padding: 0 28px; }
+    #admin-panel { display: none; padding: 32px 0 80px; }
+
+    .page-header {
+      display: flex; align-items: center; gap: 16px;
+      margin-bottom: 28px;
+    }
+    .page-title {
+      font-size: 1.5rem; font-weight: 800; color: #1a1a2e;
+    }
+    .page-subtitle { font-size: 13px; color: #9ca3af; margin-top: 2px; }
+
+    .admin-grid {
+      display: grid;
+      grid-template-columns: 440px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+    @media (max-width: 960px) { .admin-grid { grid-template-columns: 1fr; } }
+
+    /* ── Cards ── */
+    .form-card, .list-card {
+      background: #fff;
+      border-radius: 16px;
+      border: 1px solid #e8eaf0;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+      overflow: hidden;
+    }
+    .card-header {
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid #f3f4f6;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .card-icon {
+      width: 34px; height: 34px;
+      background: linear-gradient(135deg, #667eea22, #764ba222);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+    }
+    .card-title {
+      font-size: 15px; font-weight: 700; color: #1a1a2e;
+    }
+    .card-body { padding: 20px 24px 24px; }
+
+    /* ── Form ── */
+    .form-group { margin-bottom: 16px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    label {
+      display: block;
+      font-size: 12px; font-weight: 600;
+      color: #374151; margin-bottom: 6px;
+      letter-spacing: 0.03em;
+    }
+    label .req { color: #ef4444; margin-left: 2px; }
+    input[type=text], input[type=url], textarea, select {
+      width: 100%;
+      padding: 10px 14px;
+      background: #f9fafb;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 10px;
+      font-family: inherit; font-size: 14px;
+      color: #1a1a2e; outline: none;
+      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+    }
+    input[type=text]:focus, input[type=url]:focus,
+    textarea:focus, select:focus {
+      border-color: #667eea;
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+    }
+    textarea { resize: vertical; min-height: 110px; line-height: 1.6; }
+    select { appearance: none; cursor: pointer; }
+
+    /* File upload */
+    .file-upload-wrap {
+      position: relative;
+      border: 2px dashed #e5e7eb;
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      background: #f9fafb;
+    }
+    .file-upload-wrap:hover { border-color: #667eea; background: #f5f3ff; }
+    .file-upload-wrap input[type=file] {
+      position: absolute; inset: 0; opacity: 0; cursor: pointer;
+      width: 100%; height: 100%;
+      border: none; background: none; padding: 0;
+    }
+    .file-upload-wrap input[type=file]:focus { box-shadow: none; }
+    .upload-icon { font-size: 24px; margin-bottom: 6px; }
+    .upload-text { font-size: 13px; color: #6b7280; }
+    .upload-text strong { color: #667eea; }
+
+    #img-preview {
+      display: none; width: 100%; border-radius: 10px;
+      margin-top: 10px; border: 1px solid #e5e7eb;
+      max-height: 200px; object-fit: cover;
+    }
+
+    .divider {
+      display: flex; align-items: center; gap: 10px;
+      margin: 4px 0 12px;
+      font-size: 11px; font-weight: 600; color: #9ca3af;
+      letter-spacing: 0.08em;
+    }
+    .divider::before, .divider::after {
+      content: ''; flex: 1; height: 1px; background: #e5e7eb;
+    }
+
+    #btn-submit {
+      width: 100%; padding: 13px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #fff; font-weight: 700; font-size: 14px;
+      border-radius: 10px; letter-spacing: 0.04em;
+      transition: opacity 0.2s, transform 0.1s;
+      margin-top: 4px;
+    }
+    #btn-submit:hover:not(:disabled) { opacity: 0.9; }
+    #btn-submit:active:not(:disabled) { transform: scale(0.99); }
+    #btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ── Table ── */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    thead { background: #f9fafb; }
+    th {
+      text-align: left; padding: 11px 16px;
+      font-size: 11px; font-weight: 700;
+      color: #6b7280; letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border-bottom: 1px solid #f3f4f6;
+      white-space: nowrap;
+    }
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid #f9fafb;
+      font-size: 13px; color: #374151;
+      vertical-align: middle;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #fafbff; }
+    .td-title { font-weight: 600; color: #1a1a2e; max-width: 200px; }
+    .td-title span { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .cat-pill {
+      display: inline-block;
+      font-size: 11px; font-weight: 600;
+      padding: 3px 10px; border-radius: 999px;
+      background: #ede9fe; color: #7c3aed;
+    }
+
+    .tbl-btn {
+      font-size: 11px; font-weight: 600;
+      padding: 5px 12px; border-radius: 6px;
+      margin-right: 4px; transition: all 0.15s;
+    }
+    .edit-btn {
+      background: #eff6ff; border: 1px solid #bfdbfe; color: #2563eb;
+    }
+    .edit-btn:hover { background: #dbeafe; }
+    .del-btn {
+      background: #fef2f2; border: 1px solid #fecaca; color: #dc2626;
+    }
+    .del-btn:hover { background: #fee2e2; }
+
+    .empty-row td {
+      text-align: center; padding: 40px;
+      color: #9ca3af; font-size: 13px;
+    }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed; bottom: 28px; right: 28px; z-index: 9999;
+      background: #1a1a2e; color: #fff;
+      font-weight: 600; font-size: 13px;
+      padding: 12px 20px; border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      transform: translateY(80px); opacity: 0;
+      transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+      display: flex; align-items: center; gap: 8px;
+    }
+    #toast.show { transform: translateY(0); opacity: 1; }
+    #toast.success::before { content: '✓'; color: #4ade80; font-weight: 800; }
+    #toast.deleted::before { content: '🗑'; }
+
+    /* ── Footer ── */
+    .site-footer {
+      border-top: 1px solid #e8eaf0;
+      padding: 20px 0;
+      text-align: center;
+      font-size: 12px; color: #9ca3af;
+      background: #fff;
+    }
+    .site-footer a { color: #667eea; font-weight: 500; }
+  </style>
 </head>
-<body class="page">
+<body>
 
   <!-- ── Auth screen ── -->
   <div id="auth-screen">
     <div class="auth-box">
-      <h2>ADMIN LOGIN</h2>
-      <input type="password" id="admin-pw" placeholder="Password" autocomplete="current-password">
+      <p class="auth-logo">Storyboard Prompts</p>
+      <h2>Admin Login</h2>
+      <input type="password" id="admin-pw" placeholder="Enter password" autocomplete="current-password">
       <div id="auth-error"></div>
-      <button class="btn-primary" id="btn-login" style="width:100%;padding:11px">Login</button>
+      <button class="btn-login" id="btn-login">Sign In</button>
     </div>
   </div>
 
   <!-- ── Header ── -->
   <header class="site-header">
-    <div class="container header-inner">
-      <a href="index.html" class="logo">STORY<span>BOARD</span></a>
+    <div class="header-inner">
+      <a href="index.html" class="logo">STORYBOARD</a>
+      <span class="header-badge">ADMIN</span>
       <nav class="header-nav">
         <a href="index.html">← Gallery</a>
       </nav>
@@ -30,67 +321,92 @@
 
   <!-- ── Admin panel ── -->
   <div class="container" id="admin-panel">
-    <h1 class="admin-title">ADMIN PANEL</h1>
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Prompt Manager</h1>
+        <p class="page-subtitle">Add, edit, or delete prompts from the gallery</p>
+      </div>
+    </div>
 
     <div class="admin-grid">
 
-      <!-- Form -->
+      <!-- ── Form ── -->
       <div class="form-card">
-        <h2 id="form-title">Add New Prompt</h2>
+        <div class="card-header">
+          <div class="card-icon">✏️</div>
+          <h2 class="card-title" id="form-title">Add New Prompt</h2>
+        </div>
+        <div class="card-body">
+          <form id="prompt-form">
 
-        <form id="prompt-form">
-          <div class="form-group">
-            <label>Title *</label>
-            <input type="text" id="f-title" placeholder="e.g. Cinematic Samurai Storyboard" required>
-          </div>
+            <div class="form-group">
+              <label>Title <span class="req">*</span></label>
+              <input type="text" id="f-title" placeholder="e.g. Cinematic Samurai Storyboard" required>
+            </div>
 
-          <div class="form-group">
-            <label>Prompt Text *</label>
-            <textarea id="f-prompt" placeholder="Full prompt text…" required></textarea>
-          </div>
+            <div class="form-group">
+              <label>Description</label>
+              <input type="text" id="f-description" placeholder="Brief description of this prompt…">
+            </div>
 
-          <div class="form-group">
-            <label>Category *</label>
-            <select id="f-category" required>
-              <option value="">— Select —</option>
-              <option value="comic-storyboard">Comic / Storyboard</option>
-              <option value="character-sheet">Character Sheet</option>
-              <option value="anime-manga">Anime / Manga</option>
-              <option value="cinematic">Cinematic</option>
-              <option value="poster-flyer">Poster / Flyer</option>
-              <option value="infographic">Infographic</option>
-              <option value="other">Other</option>
-            </select>
-          </div>
+            <div class="form-group">
+              <label>Prompt Text <span class="req">*</span></label>
+              <textarea id="f-prompt" placeholder="Full prompt text…" required></textarea>
+            </div>
 
-          <div class="form-group">
-            <label>Author</label>
-            <input type="text" id="f-author" placeholder="LeeveoAI">
-          </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Category <span class="req">*</span></label>
+                <select id="f-category" required>
+                  <option value="">— Select —</option>
+                  <option value="comic-storyboard">Comic / Storyboard</option>
+                  <option value="character-sheet">Character Sheet</option>
+                  <option value="anime-manga">Anime / Manga</option>
+                  <option value="cinematic">Cinematic</option>
+                  <option value="poster-flyer">Poster / Flyer</option>
+                  <option value="infographic">Infographic</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Author</label>
+                <input type="text" id="f-author" placeholder="LeeveoAI">
+              </div>
+            </div>
 
-          <div class="form-group">
-            <label>Tags (comma separated)</label>
-            <input type="text" id="f-tags" placeholder="anime, storyboard, dark fantasy">
-          </div>
+            <div class="form-group">
+              <label>Tags <span style="color:#9ca3af;font-weight:400">(comma separated)</span></label>
+              <input type="text" id="f-tags" placeholder="anime, storyboard, dark fantasy">
+            </div>
 
-          <div class="form-group">
-            <label>Image — Upload file</label>
-            <input type="file" id="f-image" accept="image/*">
-            <img id="img-preview" src="" alt="Preview">
-          </div>
+            <div class="form-group">
+              <label>Image</label>
+              <div class="file-upload-wrap">
+                <input type="file" id="f-image" accept="image/*">
+                <div class="upload-icon">🖼️</div>
+                <p class="upload-text"><strong>Click to upload</strong> or drag & drop</p>
+              </div>
+              <img id="img-preview" src="" alt="Preview">
+            </div>
 
-          <div class="form-group">
-            <label>Image — or paste URL</label>
-            <input type="url" id="f-image-url" placeholder="https://…">
-          </div>
+            <div class="divider">OR PASTE URL</div>
 
-          <button type="submit" id="btn-submit">Save Prompt</button>
-        </form>
+            <div class="form-group">
+              <input type="url" id="f-image-url" placeholder="https://…">
+            </div>
+
+            <button type="submit" id="btn-submit">Save Prompt</button>
+
+          </form>
+        </div>
       </div>
 
-      <!-- List -->
+      <!-- ── List ── -->
       <div class="list-card">
-        <h2 class="list-title">All Prompts</h2>
+        <div class="card-header">
+          <div class="card-icon">📋</div>
+          <h2 class="card-title">All Prompts</h2>
+        </div>
         <div class="table-wrap">
           <table>
             <thead>
@@ -103,7 +419,7 @@
               </tr>
             </thead>
             <tbody id="list-body">
-              <tr><td colspan="5">Login to view…</td></tr>
+              <tr class="empty-row"><td colspan="5">Login to view…</td></tr>
             </tbody>
           </table>
         </div>
@@ -117,9 +433,7 @@
 
   <!-- ── Footer ── -->
   <footer class="site-footer">
-    <div class="container">
-      <p>Admin Panel · <a href="index.html">← Back to Gallery</a></p>
-    </div>
+    <p>Admin Panel · <a href="index.html">← Back to Gallery</a></p>
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
